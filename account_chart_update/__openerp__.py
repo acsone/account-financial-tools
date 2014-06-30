@@ -70,5 +70,5 @@ Any problem found while updating will be shown on the last step.
         'wizard/wizard_chart_update_view.xml',
     ],
     "active": False,
-    "installable": True
+    'installable': False
 }
