@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-	<data>
+    <data>
 
-		<!-- Wizard for Multi Charts of Accounts -->
+        <!-- Wizard for Multi Charts of Accounts -->
 
         <record id="view_update_multi_chart" model="ir.ui.view">
             <field name="name">Update Chart of Accounts from a Chart Template
@@ -92,28 +92,28 @@
                                 </field>
                             </page>
 
-						</notebook>
-					</group>
+                        </notebook>
+                    </group>
 
-					<group col="4" colspan="4"
-						attrs="{'invisible':[('state','!=','done'),]}">
-						<separator colspan="4" string="Log" />
-						<field name="log" colspan="4" nolabel="1" />
-						<group colspan="4">
-							<separator colspan="4" string="Summary of created objects" />
-							<field name="new_tax_codes" />
-							<field name="new_taxes" />
-							<field name="new_accounts" />
-							<field name="new_fps" />
-						</group>
-						<group colspan="4">
-							<separator colspan="4" string="Summary of updated objects" />
-							<field name="updated_tax_codes" />
-							<field name="updated_taxes" />
-							<field name="updated_accounts" />
-							<field name="updated_fps" />
-						</group>
-					</group>
+                    <group col="4" colspan="4"
+                        attrs="{'invisible':[('state','!=','done'),]}">
+                        <separator colspan="4" string="Log" />
+                        <field name="log" colspan="4" nolabel="1" />
+                        <group colspan="4">
+                            <separator colspan="4" string="Summary of created objects" />
+                            <field name="new_tax_codes" />
+                            <field name="new_taxes" />
+                            <field name="new_accounts" />
+                            <field name="new_fps" />
+                        </group>
+                        <group colspan="4">
+                            <separator colspan="4" string="Summary of updated objects" />
+                            <field name="updated_tax_codes" />
+                            <field name="updated_taxes" />
+                            <field name="updated_accounts" />
+                            <field name="updated_fps" />
+                        </group>
+                    </group>
 
                     <footer>
                         <div states="init">
@@ -135,17 +135,16 @@
             </field>
         </record>
 
-		<record id="action_wizard_update_chart" model="ir.actions.act_window">
-			<field name="name">Update Chart of Accounts from a Chart Template
-			</field>
-			<field name="type">ir.actions.act_window</field>
-			<field name="res_model">wizard.update.charts.accounts</field>
-			<field name="view_type">form</field>
-			<field name="view_mode">form</field>
-			<field name="target">new</field>
-		</record>
+        <record id="action_wizard_update_chart" model="ir.actions.act_window">
+            <field name="name">Update chart of accounts</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.update.charts.accounts</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
 
         <menuitem sequence="0" parent="account.account_account_menu" action="action_wizard_update_chart" id="menu_wizard" />
 
-	</data>
+    </data>
 </openerp>
