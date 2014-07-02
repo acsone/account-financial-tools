@@ -19,13 +19,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-<<<<<<< HEAD
 """
 Account Chart Update Wizard
 """
 
-=======
->>>>>>> Revert "Rename all addons to xxx_unported to be travis compliant"
 from openerp.osv import fields, orm
 from openerp.tools.translate import _
 import logging
@@ -57,17 +54,10 @@ class WizardLog:
         self.messages = []
         self.errors = []
 
-<<<<<<< HEAD
-    """
-    Adds a message to the log.
-    """
-    def add(self, message, is_error=False):
-=======
     def add(self, message, is_error=False):
         """
         Adds a message to the log.
         """
->>>>>>> Revert "Rename all addons to xxx_unported to be travis compliant"
         logger = logging.getLogger("account_chart_update")
         if is_error:
             logger.warning(u"Log line: %s" % message)
@@ -76,17 +66,10 @@ class WizardLog:
             logger.debug(u"Log line: %s" % message)
         self.messages.append(message)
 
-<<<<<<< HEAD
-    """
-    Returns whether errors where logged.
-    """
-    def has_errors(self):
-=======
     def has_errors(self):
         """
         Returns whether errors where logged.
         """
->>>>>>> Revert "Rename all addons to xxx_unported to be travis compliant"
         return self.errors
 
     def __call__(self):
@@ -102,17 +85,10 @@ class WizardLog:
 class wizard_update_charts_accounts(orm.TransientModel):
     _name = 'wizard.update.charts.accounts'
 
-<<<<<<< HEAD
-    """
-    Gets the available languages for the selection.
-    """
-    def _get_lang_selection_options(self, cr, uid, context={}):
-=======
     def _get_lang_selection_options(self, cr, uid, context={}):
         """
         Gets the available languages for the selection.
         """
->>>>>>> Revert "Rename all addons to xxx_unported to be travis compliant"
         obj = self.pool.get('res.lang')
         ids = obj.search(cr, uid, [], context=context)
         res = obj.read(cr, uid, ids, ['code', 'name'], context)
@@ -154,12 +130,9 @@ class wizard_update_charts_accounts(orm.TransientModel):
 
     def name_search(self, cr, user, name,
                     args=None, operator='ilike', context=None, limit=80):
-<<<<<<< HEAD
-=======
         """
         Redefine the search to search by company name.
         """
->>>>>>> Revert "Rename all addons to xxx_unported to be travis compliant"
         if not name:
             name = '%'
         if not args:
@@ -172,17 +145,10 @@ class wizard_update_charts_accounts(orm.TransientModel):
             cr, user, [('company_id', operator, name)] + args, limit=limit)
         return self.name_get(cr, user, ids, context=context)
 
-<<<<<<< HEAD
-    """
-    Use the company name and template as name.
-    """
-    def name_get(self, cr, uid, ids, context=None):
-=======
     def name_get(self, cr, uid, ids, context=None):
         """
         Use the company name and template as name.
         """
->>>>>>> Revert "Rename all addons to xxx_unported to be travis compliant"
         if context is None:
             context = {}
         if not len(ids):
@@ -194,17 +160,10 @@ class wizard_update_charts_accounts(orm.TransientModel):
                        ' - ' + record.chart_template_id.name))
         return res
 
-<<<<<<< HEAD
-    """
-    Returns the default chart template.
-    """
-    def _get_chart(self, cr, uid, context=None):
-=======
     def _get_chart(self, cr, uid, context=None):
         """
         Returns the default chart template.
         """
->>>>>>> Revert "Rename all addons to xxx_unported to be travis compliant"
         if context is None:
             context = {}
         ids = self.pool.get(
@@ -213,15 +172,6 @@ class wizard_update_charts_accounts(orm.TransientModel):
             return ids[0]
         return False
 
-<<<<<<< HEAD
-    """
-    Returns the default code size for the accounts.
-    To figure out the number of digits of the accounts it look at the
-    code size of the default receivable account of the company
-    (or user's company if any company is given).
-    """
-    def _get_code_digits(self, cr, uid, context=None, company_id=None):
-=======
     def _get_code_digits(self, cr, uid, context=None, company_id=None):
         """
         Returns the default code size for the accounts.
@@ -229,7 +179,6 @@ class wizard_update_charts_accounts(orm.TransientModel):
         code size of the default receivable account of the company
         (or user's company if any company is given).
         """
->>>>>>> Revert "Rename all addons to xxx_unported to be travis compliant"
         if context is None:
             context = {}
         property_obj = self.pool.get('ir.property')
@@ -274,17 +223,10 @@ class wizard_update_charts_accounts(orm.TransientModel):
         'lang': lambda self, cr, uid, context: context and context.get('lang') or None,
     }
 
-<<<<<<< HEAD
-    """
-    Update the code size when the company changes
-    """
-    def onchange_company_id(self, cr, uid, ids, company_id, context=None):
-=======
     def onchange_company_id(self, cr, uid, ids, company_id, context=None):
         """
         Update the code size when the company changes
         """
->>>>>>> Revert "Rename all addons to xxx_unported to be travis compliant"
         res = {
             'value': {
                 'code_digits': self._get_code_digits(cr, uid, context=context, company_id=company_id),
@@ -292,17 +234,10 @@ class wizard_update_charts_accounts(orm.TransientModel):
         }
         return res
 
-<<<<<<< HEAD
-    """
-    Initial action that sets the initial state.
-    """
-    def action_init(self, cr, uid, ids, context=None):
-=======
     def action_init(self, cr, uid, ids, context=None):
         """
         Initial action that sets the initial state.
         """
->>>>>>> Revert "Rename all addons to xxx_unported to be travis compliant"
         if context is None:
             context = {}
         wizard = self.browse(cr, uid, ids[0], context=context)
