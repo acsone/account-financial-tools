@@ -44,88 +44,114 @@ class TestAccountCreditLimit(SharedSetupTransactionCase):
     )
 
     def test_level1(self):
-        partner_id = self.registry('res.partner').create(self.cr, self.uid, {'name': 'partner_01'})
-        product_id = self.registry('product.product').create(self.cr, self.uid, {'name': 'product_test_01',
-                                                                                 'lst_price': 2000.00,
-                                                                                 })
+        partner_id = \
+            self.registry('res.partner').create(self.cr,
+                                                self.uid,
+                                                {'name': 'partner_01'})
+        product_id = \
+            self.registry('product.product').create(self.cr,
+                                                    self.uid,
+                                                    {'name': 'product_test_01',
+                                                     'lst_price': 2000.00,
+                                                     })
         today = datetime.now()
         date = today.strftime('%Y-%m-%d')
-        invoice_id = self.registry('account.invoice').create(self.cr,
-                                                             self.uid,
-                                                             {'partner_id': partner_id,
-                                                              'date_due': date,
-                                                              'account_id':
-                                                              self.ref('account_credit_limit.a_recv'),
-                                                              'journal_id':
-                                                              self.ref('account_credit_limit.sales_journal'),
-                                                              })
-        self.registry('account.invoice.line').create(self.cr,
-                                                     self.uid,
-                                                     {'invoice_id': invoice_id,
-                                                      'name': 'test',
-                                                      'account_id': self.ref('account_credit_limit.a_sale'),
-                                                      'price_unit': 2000.00,
-                                                      'quantity': 1,
-                                                      'product_id': product_id,
-                                                      })
+        invoice_id = self.registry('account.invoice')\
+            .create(self.cr,
+                    self.uid,
+                    {'partner_id': partner_id,
+                     'date_due': date,
+                     'account_id':
+                     self.ref('account_credit_limit.a_recv'),
+                     'journal_id':
+                     self.ref('account_credit_limit.sales_journal'),
+                     })
+        self.registry('account.invoice.line')\
+            .create(self.cr,
+                    self.uid,
+                    {'invoice_id': invoice_id,
+                     'name': 'test',
+                     'account_id': self.ref('account_credit_limit.a_sale'),
+                     'price_unit': 2000.00,
+                     'quantity': 1,
+                     'product_id': product_id,
+                     })
         wf_service = netsvc.LocalService("workflow")
         wf_service.trg_validate(
             self.uid, 'account.invoice', invoice_id, 'invoice_open', self.cr)
-        partner_obj = self.registry('res.partner').browse(self.cr, self.uid, [partner_id])
-        self.assertAlmostEquals(partner_obj.credit_limit_level1, 0.0, 2, "Level 1 isn't correct")
+        partner_obj = self.registry('res.partner').browse(self.cr,
+                                                          self.uid,
+                                                          [partner_id])
+        self.assertAlmostEquals(partner_obj.credit_limit_level1, 0.0, 2,
+                                "Level 1 isn't correct")
         yesterday = datetime.now() - timedelta(days=1)
         date = yesterday.strftime('%Y-%m-%d')
-        invoice_id = self.registry('account.invoice').create(self.cr,
-                                                             self.uid,
-                                                             {'partner_id': partner_id,
-                                                              'date_due': date,
-                                                              'account_id': self.ref('account_credit_limit.a_recv'),
-                                                              'journal_id':
-                                                              self.ref('account_credit_limit.sales_journal'),
-                                                              })
-        self.registry('account.invoice.line').create(self.cr,
-                                                     self.uid,
-                                                     {'invoice_id': invoice_id,
-                                                      'name': 'test',
-                                                      'account_id': self.ref('account_credit_limit.a_sale'),
-                                                      'price_unit': 2000.00,
-                                                      'quantity': 1,
-                                                      'product_id': product_id,
-                                                      })
+        invoice_id = self.registry('account.invoice')\
+            .create(self.cr,
+                    self.uid,
+                    {'partner_id': partner_id,
+                     'date_due': date,
+                     'account_id': self.ref('account_credit_limit.a_recv'),
+                     'journal_id':
+                     self.ref('account_credit_limit.sales_journal'),
+                     })
+        self.registry('account.invoice.line').\
+            create(self.cr,
+                   self.uid,
+                   {'invoice_id': invoice_id,
+                    'name': 'test',
+                    'account_id': self.ref('account_credit_limit.a_sale'),
+                    'price_unit': 2000.00,
+                    'quantity': 1,
+                    'product_id': product_id,
+                    })
         wf_service = netsvc.LocalService("workflow")
         wf_service.trg_validate(
             self.uid, 'account.invoice', invoice_id, 'invoice_open', self.cr)
-        partner_obj = self.registry('res.partner').browse(self.cr, self.uid, [partner_id])
-        self.assertAlmostEquals(partner_obj.credit_limit_level1, 2000.0, 2, "Level 1 isn't correct")
+        partner_obj = self.registry('res.partner').browse(self.cr,
+                                                          self.uid,
+                                                          [partner_id])
+        self.assertAlmostEquals(partner_obj.credit_limit_level1, 2000.0, 2,
+                                "Level 1 isn't correct")
 
     def test_level2(self):
-        partner_id = self.registry('res.partner').create(self.cr, self.uid, {'name': 'partner_01'})
-        product_id = self.registry('product.product').create(self.cr, self.uid, {'name': 'product_test_01',
-                                                                                 'lst_price': 2000.00,
-                                                                                 })
+        partner_id = self.registry('res.partner').create(self.cr,
+                                                         self.uid,
+                                                         {'name': 'partner_01'})
+        product_id = self.registry('product.product')\
+            .create(self.cr,
+                    self.uid,
+                    {'name': 'product_test_01',
+                        'lst_price': 2000.00,
+                     })
         today = datetime.now()
         date = today.strftime('%Y-%m-%d')
-        invoice_id = self.registry('account.invoice').create(self.cr,
-                                                             self.uid,
-                                                             {'partner_id': partner_id,
-                                                              'date_due': date,
-                                                              'account_id': self.ref('account_credit_limit.a_recv'),
-                                                              'journal_id':
-                                                              self.ref('account_credit_limit.sales_journal'),
-                                                              })
-        self.registry('account.invoice.line').create(self.cr,
-                                                     self.uid,
-                                                     {'invoice_id': invoice_id,
-                                                      'name': 'test',
-                                                      'account_id': self.ref('account_credit_limit.a_sale'),
-                                                      'price_unit': 2000.00,
-                                                      'quantity': 1,
-                                                      'product_id': product_id,
-                                                      })
+        invoice_id = self.registry('account.invoice')\
+            .create(self.cr,
+                    self.uid,
+                    {'partner_id': partner_id,
+                     'date_due': date,
+                     'account_id': self.ref('account_credit_limit.a_recv'),
+                     'journal_id':
+                     self.ref('account_credit_limit.sales_journal'),
+                     })
+        self.registry('account.invoice.line')\
+            .create(self.cr,
+                    self.uid,
+                    {'invoice_id': invoice_id,
+                     'name': 'test',
+                     'account_id': self.ref('account_credit_limit.a_sale'),
+                     'price_unit': 2000.00,
+                     'quantity': 1,
+                     'product_id': product_id,
+                     })
         wf_service = netsvc.LocalService("workflow")
         wf_service.trg_validate(
             self.uid, 'account.invoice', invoice_id, 'invoice_open', self.cr)
-        partner_obj = self.registry('res.partner').browse(self.cr, self.uid, [partner_id])
-        self.assertAlmostEquals(partner_obj.credit_limit_level2, 2000.0, 2, "Level 2 isn't correct")
+        partner_obj = self.registry('res.partner').browse(self.cr,
+                                                          self.uid,
+                                                          [partner_id])
+        self.assertAlmostEquals(partner_obj.credit_limit_level2, 2000.0, 2,
+                                "Level 2 isn't correct")
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

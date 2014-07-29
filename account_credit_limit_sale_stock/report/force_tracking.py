@@ -33,17 +33,21 @@ from openerp.tools.translate import _
 
 class force_tracking(orm.Model):
     _name = "force.tracking"
-    _columns = {'user_id': fields.many2one('res.users', string='User', ondelete='cascade'),
+    _columns = {'user_id': fields.many2one('res.users',
+                                           string='User',
+                                           ondelete='cascade'),
                 'date_forcing': fields.datetime(string='Date'),
                 'type': fields.selection([
                     ('delivery_order', _('Delivery Order')),
                     ('sale_order', _('Sale Order')), ], string='Type'),
                 'source_document': fields.char(string='Source Document'),
-                'partner_id': fields.many2one('res.partner', string='Customer', required=True),
-                'amount': fields.char(string='Amount Forced', required=True),
+                'partner_id': fields.many2one('res.partner',
+                                              string='Customer',
+                                              required=True),
+                'amount': fields.char(string='Amount Forced',
+                                      required=True),
                 }
-    _defaults = {
-        'date_forcing': fields.datetime.now,
-        }
+    _defaults = {'date_forcing': fields.datetime.now,
+                 }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -33,20 +33,27 @@ from openerp.tools.translate import _
 
 class sale_order(orm.Model):
     _inherit = 'sale.order'
-    _columns = {'commercial_partner_id': fields.related('partner_id', 'commercial_partner_id',
-                                                        string='Commercial Entity', type='many2one',
-                                                        relation='res.partner', store=True, readonly=True,
-                                                        help="The commercial entity that will be used on Journal\
-                                                         Entries for this invoice")
+    _columns = {'commercial_partner_id':
+                fields.related('partner_id', 'commercial_partner_id',
+                               string='Commercial Entity', type='many2one',
+                               relation='res.partner', store=True,
+                               readonly=True,
+                               help="The commercial entity that will be used on\
+                                Journal Entries for this invoice")
                 }
 
     def action_button_confirm(self, cr, uid, ids, context={}):
         sale_order_obj = self.browse(cr, uid, ids, context=context)[0]
         if context.get('force', False) is not True:
-            res = super(sale_order, self).action_button_confirm(cr, uid, ids, context=context)
-            if ((sale_order_obj.commercial_partner_id.blocked_customer) is True):
+            res = super(sale_order, self).action_button_confirm(cr,
+                                                                uid,
+                                                                ids,
+                                                                context=context)
+            if ((sale_order_obj.commercial_partner_id.blocked_customer)
+                    is True):
                 raise orm.except_orm(_('Warning !'),
-                                     _("This customer is blocked or this confirmation implies to blocked it"))
+                                     _("This customer is blocked or this\
+                                      confirmation implies to blocked it"))
             else:
                 return res
         else:
@@ -55,7 +62,8 @@ class sale_order(orm.Model):
                 values = {'order_id': sale_order_obj.id,
                           }
 
-                wizard_id = self.pool.get('warning.force.sale.order.wizard').create(cr, uid, values, context=context)
+                wizard_id = self.pool.get('warning.force.sale.order.wizard')\
+                    .create(cr, uid, values, context=context)
                 return {
                     'name': _('Force Order'),
                     'view_mode': 'form',
@@ -71,12 +79,15 @@ class sale_order(orm.Model):
                 }
             else:
                 context.update({'validate': False, 'force': False})
-                return super(sale_order, self).action_button_confirm(cr, uid, ids, context=context)
+                return super(sale_order, self)\
+                    .action_button_confirm(cr, uid, ids, context=context)
 
 
 class warning_force_sale_order_wizard(orm.TransientModel):
     _name = 'warning.force.sale.order.wizard'
-    _columns = {'order_id': fields.many2one('sale.order', string='Order', required=True),
+    _columns = {'order_id': fields.many2one('sale.order',
+                                            string='Order',
+                                            required=True),
                 }
 
     def validate(self, cr, uid, ids, context=None):
@@ -85,17 +96,20 @@ class warning_force_sale_order_wizard(orm.TransientModel):
             amount = _('Manual Blocking')
         else:
             amount = this.order_id.amount_total
-        diff = this.order_id.commercial_partner_id.credit_limit - this.order_id.commercial_partner_id.level_amount
+        diff = this.order_id.commercial_partner_id.credit_limit -\
+            this.order_id.commercial_partner_id.level_amount
         if (diff > 0):
             amount = amount - diff
-        self.pool.get('force.tracking').create(cr, uid, {'user_id': uid,
-                                                         'type': 'sale_order',
-                                                         'source_document': this.order_id.name,
-                                                         'partner_id': this.order_id.partner_id.id,
-                                                         'amount': str(amount),
-                                                         })
+        self.pool.get('force.tracking')\
+            .create(cr, uid, {'user_id': uid,
+                              'type': 'sale_order',
+                              'source_document': this.order_id.name,
+                              'partner_id': this.order_id.partner_id.id,
+                              'amount': str(amount),
+                              })
         context.update({'validate': True, 'force': True})
-        return self.pool.get('sale.order').action_button_confirm(cr, uid, [this.order_id.id], context=context)
+        return self.pool.get('sale.order')\
+            .action_button_confirm(cr, uid, [this.order_id.id], context=context)
 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

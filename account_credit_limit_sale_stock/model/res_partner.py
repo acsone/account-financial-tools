@@ -38,25 +38,30 @@ class res_partner(orm.Model):
         stock_move_model = self.pool.get('stock.move')
         for partner in self.browse(cr, uid, ids):
             draft_partner_account_invoice_line = \
-                self.pool.get('account.invoice.line').search(cr,
-                                                             uid,
-                                                             [('invoice_id.commercial_partner_id', '=',
-                                                               partner.commercial_partner_id.id),
-                                                              ('invoice_id.state', '=', 'draft')]
-                                                             )
-            stock_move_ids = stock_move_model.search(cr,
-                                                     uid,
-                                                     [('picking_id.picking_type_id.code', '=', 'outgoing'),
-                                                      ('picking_id.state', '=', 'done'),
-                                                      ('procurement_id', '<>', False),
-                                                      ('procurement_id.sale_line_id.order_id.commercial_partner_id',
-                                                       '=', partner.commercial_partner_id.id), '|',
-                                                      ('procurement_id.sale_line_id.invoice_lines', '=', False),
-                                                      ('procurement_id.sale_line_id.invoice_lines', 'in',
-                                                       draft_partner_account_invoice_line)]
-                                                     )
+                self.pool.get('account.invoice.line')\
+                    .search(cr,
+                            uid,
+                            [('invoice_id.commercial_partner_id', '=',
+                              partner.commercial_partner_id.id),
+                             ('invoice_id.state', '=', 'draft')]
+                            )
+            stock_move_ids = stock_move_model\
+                .search(cr,
+                        uid,
+                        [('picking_id.picking_type_id.code', '=', 'outgoing'),
+                         ('picking_id.state', '=', 'done'),
+                         ('procurement_id', '<>', False),
+                         ('procurement_id.sale_line_id.order_id.\
+                         commercial_partner_id',
+                          '=', partner.commercial_partner_id.id), '|',
+                         ('procurement_id.sale_line_id.invoice_lines', '=',
+                          False),
+                         ('procurement_id.sale_line_id.invoice_lines', 'in',
+                          draft_partner_account_invoice_line)]
+                        )
             credit = 0.0
-            for stock_move in stock_move_model.browse(cr, uid, stock_move_ids, context=context):
+            for stock_move in stock_move_model.browse(cr, uid, stock_move_ids,
+                                                      context=context):
                 sale_order_line = stock_move.procurement_id.sale_line_id
                 tax_ids = sale_order_line.tax_id
                 tax = 1.0
@@ -70,25 +75,34 @@ class res_partner(orm.Model):
         res = {}
         for partner in self.browse(cr, uid, ids):
             draft_partner_account_invoice_line = \
-                self.pool.get('account.invoice.line').search(cr,
-                                                             uid,
-                                                             [('invoice_id.commercial_partner_id', '=',
-                                                               partner.commercial_partner_id.id),
-                                                              ('invoice_id.state', '=', 'draft')]
-                                                             )
+                self.pool.get('account.invoice.line')\
+                    .search(cr,
+                            uid,
+                            [('invoice_id.commercial_partner_id', '=',
+                              partner.commercial_partner_id.id),
+                             ('invoice_id.state', '=', 'draft')]
+                            )
             stock_move_ids = \
-                self.pool.get('stock.move').search(cr,
-                                                   uid,
-                                                   [('procurement_id.sale_line_id.order_id.commercial_partner_id', '=',
-                                                     partner.commercial_partner_id.id),
-                                                    ('picking_id.state', 'not in', ('draft', 'done', 'cancel')),
-                                                    ('procurement_id', '<>', False), '|',
-                                                    ('procurement_id.sale_line_id.invoice_lines', '=', False),
-                                                    ('procurement_id.sale_line_id.invoice_lines', 'in',
-                                                     draft_partner_account_invoice_line)]
-                                                   )
+                self.pool.get('stock.move')\
+                    .search(cr,
+                            uid,
+                            [('procurement_id.sale_line_id.order_id.\
+                            commercial_partner_id', '=',
+                              partner.commercial_partner_id.id),
+                             ('picking_id.state', 'not in',
+                              ('draft', 'done', 'cancel')),
+                             ('procurement_id', '<>', False), '|',
+                             ('procurement_id.sale_line_id.invoice_lines',
+                              '=', False),
+                             ('procurement_id.sale_line_id.invoice_lines', 'in',
+                              draft_partner_account_invoice_line)]
+                            )
             somme = 0.0
-            for stock_move in self.pool.get('stock.move').browse(cr, uid, stock_move_ids, context=context):
+            for stock_move in self.pool.get('stock.move')\
+                .browse(cr,
+                        uid,
+                        stock_move_ids,
+                        context=context):
                 sale_order_line = stock_move.procurement_id.sale_line_id
                 tax_ids = sale_order_line.tax_id
                 tax = 1.0
@@ -99,7 +113,12 @@ class res_partner(orm.Model):
         return res
 
     def _is_blocked(self, cr, uid, ids, field_name, arg, context=None):
-        res = super(res_partner, self)._is_blocked(cr, uid, ids, field_name, arg, context=context)
+        res = super(res_partner, self)._is_blocked(cr,
+                                                   uid,
+                                                   ids,
+                                                   field_name,
+                                                   arg,
+                                                   context=context)
         for partner in self.browse(cr, uid, ids):
             if res[partner.id] is False:
                 blocked = False
@@ -107,27 +126,39 @@ class res_partner(orm.Model):
                     if (partner.credit_limit_level3 > partner.credit_limit):
                         blocked = True
                 elif (partner.level4_blocking is True):
-                    if ((partner.credit_limit_level4 + 1.0) > partner.credit_limit):
+                    if ((partner.credit_limit_level4 + 1.0) >
+                            partner.credit_limit):
                         blocked = True
                 res[partner.id] = blocked
         return res
 
-    def _compute_amount_blocked(self, cr, uid, ids, field_name, arg, context=None):
-        res = super(res_partner, self)._compute_amount_blocked(cr, uid, ids, field_name, arg, context=context)
+    def _compute_amount_blocked(self, cr, uid, ids, field_name, arg,
+                                context=None):
+        res = super(res_partner, self)._compute_amount_blocked(cr,
+                                                               uid,
+                                                               ids,
+                                                               field_name,
+                                                               arg,
+                                                               context=context)
         for partner in self.browse(cr, uid, ids):
             if res[partner.id] == "N/A":
                 if partner.blocked_customer:
                     if (partner.level3_blocking is True):
-                        blocked = partner.credit_limit_level3 - partner.credit_limit
+                        blocked = partner.credit_limit_level3 - \
+                            partner.credit_limit
                     elif (partner.level4_blocking is True):
-                        blocked = partner.credit_limit_level4 - partner.credit_limit
+                        blocked = partner.credit_limit_level4 - \
+                            partner.credit_limit
                 else:
                     blocked = "N/A"
                 res[partner.id] = str(blocked)
         return res
 
     def _level_amount(self, cr, uid, ids, field_name, arg, context=None):
-        res = super(res_partner, self)._level_amount(cr, uid, ids, context=context)
+        res = super(res_partner, self)._level_amount(cr,
+                                                     uid,
+                                                     ids,
+                                                     context=context)
         for partner in self.browse(cr, uid, ids):
             if res[partner.id] is None:
                 if (partner.level3_blocking is True):
@@ -136,13 +167,22 @@ class res_partner(orm.Model):
                     res[partner.id] = partner.credit_limit_level4
         return res
 
-    _columns = {'credit_limit_level3': fields.function(_compute_level3, type="float", string='Level 3'),
-                'credit_limit_level4': fields.function(_compute_level4, type="float", string='Level 4'),
+    _columns = {'credit_limit_level3': fields.function(_compute_level3,
+                                                       type="float",
+                                                       string='Level 3'),
+                'credit_limit_level4': fields.function(_compute_level4,
+                                                       type="float",
+                                                       string='Level 4'),
                 'level3_blocking': fields.boolean(),
                 'level4_blocking': fields.boolean(),
-                'blocked_customer': fields.function(_is_blocked, type='boolean', string="Blocked Customer"),
-                'amount_blocked': fields.function(_compute_amount_blocked, type='char', string='Amount Blocked'),
-                'level_amount': fields.function(_level_amount, type='float', string='Level Amount'),
+                'blocked_customer': fields.function(_is_blocked,
+                                                    type='boolean',
+                                                    string="Blocked Customer"),
+                'amount_blocked': fields.function(_compute_amount_blocked,
+                                                  type='char',
+                                                  string='Amount Blocked'),
+                'level_amount': fields.function(_level_amount, type='float',
+                                                string='Level Amount'),
                 }
 
     def levels_change(self, cr, uid, ids):

@@ -49,11 +49,15 @@ Compute 2 others level of credit limit
 
 Select a level for a customer
 
-If the amount of the selected level is greater than credit limit of this customer, it is blocked
+If the amount of the selected level is greater than credit limit of
+this customer, it is blocked
 
-If a customer is blocked, a compute field in res_partner is True and you can't confirm a sale ordre or transfer a
-delivery order. You can bypass it by clicking on force confirm button or force tranfer button.
-If you click on this button, the forcing is register in reporting menu -> credit limit forcing
+If a customer is blocked, a compute field in res_partner is True and you
+can't confirm a sale ordre or transfer a
+delivery order. You can bypass it by clicking on force confirm button or
+force tranfer button.
+If you click on this button, the forcing is register in reporting menu ->
+credit limit forcing
 
 """,
     "data": [

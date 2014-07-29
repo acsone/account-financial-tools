@@ -38,22 +38,32 @@ class res_partner(orm.Model):
         res = {}
         for partner in self.browse(cr, uid, ids):
             date = time.strftime('%Y-%m-%d', time.localtime())
-            account_ids = self.pool.get('account.account').search(cr,
-                                                                  uid,
-                                                                  [('type', 'in', ('receivable', 'payable'))],
-                                                                  context=context)
-            move_line_ids = self.pool.get('account.move.line').search(cr,
-                                                                      uid,
-                                                                      [('partner_id.id', '=',
-                                                                        partner.commercial_partner_id.id),
-                                                                       ('account_id.id', 'in', account_ids),
-                                                                       ('reconcile_id', '=', False), '|',
-                                                                       ('date_maturity', '=', False),
-                                                                       ('date_maturity', '<', date)
-                                                                       ],
-                                                                      context=context)
+            account_ids = \
+                self.pool.get('account.account').search(cr,
+                                                        uid,
+                                                        [('type',
+                                                          'in',
+                                                          ('receivable',
+                                                           'payable'))],
+                                                        context=context)
+            move_line_ids = \
+                self.pool.get('account.move.line')\
+                    .search(cr,
+                            uid,
+                            [('partner_id.id', '=',
+                              partner.commercial_partner_id.id),
+                             ('account_id.id', 'in', account_ids),
+                             ('reconcile_id', '=', False), '|',
+                             ('date_maturity', '=', False),
+                             ('date_maturity', '<', date)
+                             ],
+                            context=context)
             somme = 0
-            for line in self.pool.get('account.move.line').browse(cr, uid, move_line_ids, context=context):
+            for line in \
+                self.pool.get('account.move.line').browse(cr,
+                                                          uid,
+                                                          move_line_ids,
+                                                          context=context):
                 somme = somme + (line.debit - line.credit)
             res[partner.id] = somme
         return res
@@ -79,14 +89,17 @@ class res_partner(orm.Model):
             res[partner.id] = blocked
         return res
 
-    def _compute_amount_blocked(self, cr, uid, ids, field_name, arg, context=None):
+    def _compute_amount_blocked(self, cr, uid, ids, field_name, arg,
+                                context=None):
         res = {}
         for partner in self.browse(cr, uid, ids):
             if partner.blocked_customer:
                 if (partner.level1_blocking is True):
-                    blocked = partner.credit_limit_level1 - partner.credit_limit
+                    blocked = partner.credit_limit_level1 - \
+                        partner.credit_limit
                 elif (partner.level2_blocking is True):
-                    blocked = partner.credit_limit_level2 - partner.credit_limit
+                    blocked = partner.credit_limit_level2 - \
+                        partner.credit_limit
                 elif (partner.manual_blocking is True):
                     blocked = "Manual Blocking"
                 else:
@@ -108,14 +121,24 @@ class res_partner(orm.Model):
                 res[partner.id] = None
         return res
 
-    _columns = {'credit_limit_level1': fields.function(_compute_level1, type="float", string='Level 1'),
-                'credit_limit_level2': fields.function(_compute_level2, type="float", string='Level 2'),
+    _columns = {'credit_limit_level1': fields.function(_compute_level1,
+                                                       type="float",
+                                                       string='Level 1'),
+                'credit_limit_level2': fields.function(_compute_level2,
+                                                       type="float",
+                                                       string='Level 2'),
                 'manual_blocking': fields.boolean(string="Manual Blocking"),
                 'level1_blocking': fields.boolean(),
                 'level2_blocking': fields.boolean(),
-                'blocked_customer': fields.function(_is_blocked, type='boolean', string="Blocked Customer"),
-                'amount_blocked': fields.function(_compute_amount_blocked, type='char', string='Amount Blocked'),
-                'level_amount': fields.function(_level_amount, type='float', string='Level Amount'),
+                'blocked_customer': fields.function(_is_blocked,
+                                                    type='boolean',
+                                                    string="Blocked Customer"),
+                'amount_blocked': fields.function(_compute_amount_blocked,
+                                                  type='char',
+                                                  string='Amount Blocked'),
+                'level_amount': fields.function(_level_amount,
+                                                type='float',
+                                                string='Level Amount'),
                 }
 
     def levels_change(self, cr, uid, ids):
