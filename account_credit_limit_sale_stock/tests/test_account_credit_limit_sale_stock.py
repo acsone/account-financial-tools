@@ -47,9 +47,9 @@ class TestAccountCreditLimitSaleStock(SharedSetupTransactionCase):
                                                                                  'lst_price': 2000.00,
                                                                                  })
         so_id = self.registry('sale.order').create(self.cr, self.uid, {'partner_id': partner_id,
-                                                                          'partner_invoice_id': partner_id,
-                                                                          'partner_shipping_id': partner_id,
-                                                                          })
+                                                                       'partner_invoice_id': partner_id,
+                                                                       'partner_shipping_id': partner_id,
+                                                                       })
 
         self.registry('sale.order.line').create(self.cr, self.uid, {'order_id': so_id,
                                                                     'order_partner_id': partner_id,
@@ -74,9 +74,9 @@ class TestAccountCreditLimitSaleStock(SharedSetupTransactionCase):
                                                                                  'lst_price': 2000.00,
                                                                                  })
         so_id = self.registry('sale.order').create(self.cr, self.uid, {'partner_id': partner_id,
-                                                                          'partner_invoice_id': partner_id,
-                                                                          'partner_shipping_id': partner_id,
-                                                                          })
+                                                                       'partner_invoice_id': partner_id,
+                                                                       'partner_shipping_id': partner_id,
+                                                                       })
 
         self.registry('sale.order.line').create(self.cr, self.uid, {'order_id': so_id,
                                                                     'order_partner_id': partner_id,

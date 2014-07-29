@@ -33,26 +33,27 @@ from openerp.tools.translate import _
 
 class sale_order(orm.Model):
     _inherit = 'sale.order'
-    _columns = {
-                'commercial_partner_id': fields.related('partner_id', 'commercial_partner_id', string='Commercial Entity', type='many2one',
-                                                relation='res.partner', store=True, readonly=True,
-                                                help="The commercial entity that will be used on Journal Entries for this invoice")
+    _columns = {'commercial_partner_id': fields.related('partner_id', 'commercial_partner_id',
+                                                        string='Commercial Entity', type='many2one',
+                                                        relation='res.partner', store=True, readonly=True,
+                                                        help="The commercial entity that will be used on Journal\
+                                                         Entries for this invoice")
                 }
 
     def action_button_confirm(self, cr, uid, ids, context={}):
         sale_order_obj = self.browse(cr, uid, ids, context=context)[0]
-        if context.get('force', False) != True:
+        if context.get('force', False) is not True:
             res = super(sale_order, self).action_button_confirm(cr, uid, ids, context=context)
-            if ((sale_order_obj.commercial_partner_id.blocked_customer) == True):
-                raise orm.except_orm(_('Warning !'), _("This customer is blocked or this confirmation implies to blocked it"))
+            if ((sale_order_obj.commercial_partner_id.blocked_customer) is True):
+                raise orm.except_orm(_('Warning !'),
+                                     _("This customer is blocked or this confirmation implies to blocked it"))
             else:
                 return res
         else:
-            if (context.get('validate', False) == False):
+            if (context.get('validate', False) is False):
                 context.update({'validate': False, 'force': False})
-                values = {
-                            'order_id': sale_order_obj.id,
-                        }
+                values = {'order_id': sale_order_obj.id,
+                          }
 
                 wizard_id = self.pool.get('warning.force.sale.order.wizard').create(cr, uid, values, context=context)
                 return {
@@ -88,11 +89,11 @@ class warning_force_sale_order_wizard(orm.TransientModel):
         if (diff > 0):
             amount = amount - diff
         self.pool.get('force.tracking').create(cr, uid, {'user_id': uid,
-                                                        'type': 'sale_order',
-                                                        'source_document': this.order_id.name,
-                                                        'partner_id': this.order_id.partner_id.id,
-                                                        'amount': str(amount),
-                                                                })
+                                                         'type': 'sale_order',
+                                                         'source_document': this.order_id.name,
+                                                         'partner_id': this.order_id.partner_id.id,
+                                                         'amount': str(amount),
+                                                         })
         context.update({'validate': True, 'force': True})
         return self.pool.get('sale.order').action_button_confirm(cr, uid, [this.order_id.id], context=context)
 

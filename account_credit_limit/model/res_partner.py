@@ -28,7 +28,6 @@
 #
 
 from openerp.osv import fields, orm
-from openerp.tools.translate import _
 import time
 
 
@@ -39,8 +38,20 @@ class res_partner(orm.Model):
         res = {}
         for partner in self.browse(cr, uid, ids):
             date = time.strftime('%Y-%m-%d', time.localtime())
-            account_ids = self.pool.get('account.account').search(cr, uid, [('type', 'in', ('receivable', 'payable'))], context=context)
-            move_line_ids = self.pool.get('account.move.line').search(cr, uid, [('partner_id.id', '=', partner.commercial_partner_id.id), ('account_id.id', 'in', account_ids), ('reconcile_id', '=', False), '|', ('date_maturity', '=', False), ('date_maturity', '<', date)], context=context)
+            account_ids = self.pool.get('account.account').search(cr,
+                                                                  uid,
+                                                                  [('type', 'in', ('receivable', 'payable'))],
+                                                                  context=context)
+            move_line_ids = self.pool.get('account.move.line').search(cr,
+                                                                      uid,
+                                                                      [('partner_id.id', '=',
+                                                                        partner.commercial_partner_id.id),
+                                                                       ('account_id.id', 'in', account_ids),
+                                                                       ('reconcile_id', '=', False), '|',
+                                                                       ('date_maturity', '=', False),
+                                                                       ('date_maturity', '<', date)
+                                                                       ],
+                                                                      context=context)
             somme = 0
             for line in self.pool.get('account.move.line').browse(cr, uid, move_line_ids, context=context):
                 somme = somme + (line.debit - line.credit)
@@ -57,13 +68,13 @@ class res_partner(orm.Model):
         res = {}
         for partner in self.browse(cr, uid, ids):
             blocked = False
-            if (partner.level1_blocking == True):
+            if (partner.level1_blocking is True):
                 if (partner.credit_limit_level1 > partner.credit_limit):
                     blocked = True
-            elif (partner.level2_blocking == True):
+            elif (partner.level2_blocking is True):
                 if (partner.credit_limit_level2 > partner.credit_limit):
                     blocked = True
-            elif (partner.manual_blocking == True):
+            elif (partner.manual_blocking is True):
                 blocked = True
             res[partner.id] = blocked
         return res
@@ -72,11 +83,11 @@ class res_partner(orm.Model):
         res = {}
         for partner in self.browse(cr, uid, ids):
             if partner.blocked_customer:
-                if (partner.level1_blocking == True):
+                if (partner.level1_blocking is True):
                     blocked = partner.credit_limit_level1 - partner.credit_limit
-                elif (partner.level2_blocking == True):
+                elif (partner.level2_blocking is True):
                     blocked = partner.credit_limit_level2 - partner.credit_limit
-                elif (partner.manual_blocking == True):
+                elif (partner.manual_blocking is True):
                     blocked = "Manual Blocking"
                 else:
                     blocked = "N/A"
@@ -89,16 +100,15 @@ class res_partner(orm.Model):
         res = {}
         for partner in self.browse(cr, uid, ids):
             res[partner.id] = None
-            if (partner.level1_blocking == True):
+            if (partner.level1_blocking is True):
                 res[partner.id] = partner.credit_limit_level1
-            elif (partner.level2_blocking == True):
+            elif (partner.level2_blocking is True):
                 res[partner.id] = partner.credit_limit_level2
-            elif (partner.manual_blocking == True):
+            elif (partner.manual_blocking is True):
                 res[partner.id] = None
         return res
 
-    _columns = {
-                'credit_limit_level1': fields.function(_compute_level1, type="float", string='Level 1'),
+    _columns = {'credit_limit_level1': fields.function(_compute_level1, type="float", string='Level 1'),
                 'credit_limit_level2': fields.function(_compute_level2, type="float", string='Level 2'),
                 'manual_blocking': fields.boolean(string="Manual Blocking"),
                 'level1_blocking': fields.boolean(),
@@ -118,7 +128,7 @@ class res_partner(orm.Model):
     def level1_change(self, cr, uid, ids, boolval):
         value = {}
         res = {}
-        if boolval == True:
+        if boolval is True:
             value = self.levels_change(cr, uid, ids)
             value['level1_blocking'] = True
             res.update({'value': value})
@@ -127,7 +137,7 @@ class res_partner(orm.Model):
     def level2_change(self, cr, uid, ids, boolval):
         value = {}
         res = {}
-        if boolval == True:
+        if boolval is True:
             value = self.levels_change(cr, uid, ids)
             value['level2_blocking'] = True
             res.update({'value': value})
@@ -136,7 +146,7 @@ class res_partner(orm.Model):
     def manual_blocking_change(self, cr, uid, ids, boolval):
         value = {}
         res = {}
-        if boolval == True:
+        if boolval is True:
             value = self.levels_change(cr, uid, ids)
             value['manual_blocking'] = True
             res.update({'value': value})

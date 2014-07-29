@@ -29,12 +29,10 @@
 
 from . import test_account_credit_limit
 
-fast_suite = [
-              test_account_credit_limit,
-]
+fast_suite = [test_account_credit_limit,
+              ]
 
-checks = [
-          test_account_credit_limit,
-]
+checks = [test_account_credit_limit,
+          ]
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

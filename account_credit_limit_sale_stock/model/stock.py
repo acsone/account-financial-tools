@@ -39,7 +39,7 @@ class stock_picking(orm.Model):
         res = {}
         for stock_picking in self.browse(cr, uid, ids):
             message = ""
-            if (stock_picking.partner_id.commercial_partner_id.blocked_customer == True):
+            if (stock_picking.partner_id.commercial_partner_id.blocked_customer is True):
                 message = _("Warning ! This customer is blocked !")
             res[stock_picking.id] = message
         return res
@@ -49,18 +49,18 @@ class stock_picking(orm.Model):
 
     def do_transfer(self, cr, uid, ids, context={}):
         stock_picking_obj = self.browse(cr, uid, ids, context=context)[0]
-        if context.get('force', False) != True:
+        if context.get('force', False) is not True:
             res = super(stock_picking, self).do_transfer(cr, uid, ids, context=context)
-            if (stock_picking_obj.partner_id.commercial_partner_id.blocked_customer == True):
-                raise orm.except_orm(_('Warning !'), _("This customer is blocked or this confirmation implies to blocked it"))
+            if (stock_picking_obj.partner_id.commercial_partner_id.blocked_customer is True):
+                raise orm.except_orm(_('Warning !'), _("This customer is blocked or this confirmation implies \
+                                                        to blocked it"))
             else:
                 return res
         else:
-            if (context.get('validate', False) == False):
+            if (context.get('validate', False) is False):
                 context.update({'force': False})
-                values = {
-                            'stock_picking_id': stock_picking_obj.id,
-                        }
+                values = {'stock_picking_id': stock_picking_obj.id,
+                          }
 
                 wizard_id = self.pool.get('warning.force.picking.wizard').create(cr, uid, values, context=context)
                 return {
@@ -89,7 +89,10 @@ class warning_force_picking_wizard(orm.TransientModel):
     def validate(self, cr, uid, ids, context=None):
         this = self.browse(cr, uid, ids, context=context)
         stock_move_model = self.pool.get('stock.move')
-        stock_move_ids = stock_move_model.search(cr, uid, [('picking_id.id', '=', this.stock_picking_id.id), ('procurement_id', '<>', False)])
+        stock_move_ids = stock_move_model.search(cr,
+                                                 uid,
+                                                 [('picking_id.id', '=', this.stock_picking_id.id),
+                                                  ('procurement_id', '<>', False)])
         amount_order = 0.0
         for stock_move in stock_move_model.browse(cr, uid, stock_move_ids, context=context):
             sale_order_line = stock_move.procurement_id.sale_line_id
@@ -103,15 +106,18 @@ class warning_force_picking_wizard(orm.TransientModel):
             amount = _('Manual Blocking')
         else:
             amount = amount_order
-        diff = this.stock_picking_id.partner_id.commercial_partner_id.credit_limit - this.stock_picking_id.partner_id.commercial_partner_id.level_amount
+        diff = this.stock_picking_id.partner_id.commercial_partner_id.credit_limit - \
+            this.stock_picking_id.partner_id.commercial_partner_id.level_amount
         if (diff > 0):
             amount = amount - diff
-        self.pool.get('force.tracking').create(cr, uid, {'user_id': uid,
-                                                        'type': 'delivery_order',
-                                                        'source_document': this.stock_picking_id.name,
-                                                        'partner_id': this.stock_picking_id.partner_id.commercial_partner_id.id,
-                                                        'amount': str(amount),
-                                                        })
+        self.pool.get('force.tracking').create(cr,
+                                               uid,
+                                               {'user_id': uid,
+                                                'type': 'delivery_order',
+                                                'source_document': this.stock_picking_id.name,
+                                                'partner_id': this.stock_picking_id.partner_id.commercial_partner_id.id,
+                                                'amount': str(amount),
+                                                })
         context.update({'validate': True, 'force': True})
         return self.pool.get('stock.picking').do_transfer(cr, uid, [this.stock_picking_id.id], context=context)
 

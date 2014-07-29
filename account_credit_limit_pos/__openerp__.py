@@ -37,16 +37,13 @@
     "category": "pos",
     "depends": [
                 "point_of_sale",
-                "account_credit_limit",
-                ],
+                "account_credit_limit"],
     "description": """
 Account Credit Limit POS
 ==============================
 This module add blocked customer informations and payment term on customer screen in POS
 """,
-    "data": [
-             'view/account_credit_limit_pos.xml',
-    ],
+    "data": ['view/account_credit_limit_pos.xml'],
     "demo": [],
     "test": [],
     'qweb': ['static/src/xml/account_credit_limit_pos.xml'],

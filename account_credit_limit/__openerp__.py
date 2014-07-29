@@ -36,8 +36,7 @@
     "images": [],
     "category": "Accounting",
     "depends": [
-                "account",
-                ],
+                "account"],
     "description": """
 Account Credit Limit
 ==============================

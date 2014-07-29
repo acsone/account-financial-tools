@@ -28,7 +28,6 @@
 #
 
 from openerp.osv import fields, orm
-from datetime import datetime
 from openerp.tools.translate import _
 
 
