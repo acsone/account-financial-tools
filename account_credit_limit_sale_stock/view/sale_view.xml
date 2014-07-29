@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_order_form" model="ir.ui.view">
+                    <field name="name">sale.order.form (account credit limit)</field>
+                    <field name="model">sale.order</field>
+                    <field name="inherit_id" ref="sale.view_order_form"/>
+                    <field name="arch" type="xml">
+                        <xpath expr="//button[@string='Confirm Sale']" position="after">
+                            <button name="action_button_confirm" states="draft" string="Force Confirm Sale" type="object" groups="base.group_user" context="{'force': True}" />
+                             <button name="action_button_confirm" states="sent" string="Force Confirm Sale" class="oe_highlight" type="object" groups="base.group_user" context="{'force': True} "/>
+                        </xpath>
+                    </field>
+        </record>
+        
+        <record id="wizard_force_sale_order" model="ir.ui.view">
+            <field name="name">warning.force.sale.order.wizard.form</field>
+            <field name="model">warning.force.sale.order.wizard</field>
+            <field name="arch" type="xml">
+                <form string="warning force sale order wizard" version="7.0">
+                    <group col="4">
+                       <p>This customer is blocked or this confirmation implies to blocked it</p>
+                    </group>
+                    <footer>
+                        <button string="Force" name="validate"
+                            type="object" class="oe_highlight" />
+                        or
+                        <button string="Cancel" class="oe_link"
+                            special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</openerp>

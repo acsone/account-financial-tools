@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+        <t t-extend="ClientListScreenWidget" t-operation="replace">
+            <t t-jquery=".client-list" t-operation="replace">
+                <table class='client-list'>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Address</th>
+                            <th>Payment Term</th>
+                            <th>Blocked Customer</th>
+                            <th>Amount Blocked</th> 
+                        </tr>
+                    </thead>
+                    <tbody class='client-list-contents'>
+                    </tbody>
+                </table>
+            </t>
+        </t>
+        <t t-extend="ClientLine" t-operation="replace">
+            <t t-jquery=".client-line" t-operation="replace">
+            <tr class='client-line' t-att-data-id='partner.id'>
+                <t t-if="partner.blocked_customer == true">
+                    <td style="background-color:#C97272"><t t-esc='partner.name' /></td>
+                    <td style="background-color:#C97272"><t t-esc='partner.address' /></td>
+                    <td style="background-color:#C97272"><t t-esc="partner.property_payment_term || 'N/A'" /></td>
+                    <td style="background-color:#C97272">Blocked</td>
+                    <td style="background-color:#C97272"><t t-esc="partner.amount_blocked" /></td>
+                </t>
+                 <t t-if="partner.blocked_customer == false">
+                    <td><t t-esc='partner.name' /></td>
+                    <td><t t-esc='partner.address' /></td>
+                    <td><t t-esc="partner.property_payment_term || 'N/A'" /></td>
+                    <td></td>
+                    <td><t t-esc="partner.amount_blocked" /></td>
+                </t>
+                </tr>
+            </t>
+        </t>
+</templates>

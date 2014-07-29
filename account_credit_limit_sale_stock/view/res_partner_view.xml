@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_partner_property_form_inherit" model="ir.ui.view">
+            <field name="name">res.partner.property.form.inherit (carodec-sale_stock)</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="account_credit_limit.view_partner_property_form_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='credit_limit_level2']" position="after">
+                    <label for="credit_limit_level3"/>
+                    <div name="credit_limit_level3">
+                        <field name="level3_blocking" class="oe_inline" on_change="level3_change(level3_blocking)"/>
+                        <field name="credit_limit_level3" class="oe_inline"/>
+                    </div>
+                    <label for="credit_limit_level4"/>
+                    <div name="credit_limit_level4">
+                        <field name="level4_blocking" class="oe_inline" on_change="level4_change(level4_blocking)"/>
+                        <field name="credit_limit_level4" class="oe_inline"/>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
+        

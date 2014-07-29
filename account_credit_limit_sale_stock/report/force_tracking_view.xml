@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_forcing_tree" model="ir.ui.view">
+         <field name="name">force.tracking.tree</field>
+         <field name="model">force.tracking</field>
+         <field name="arch" type="xml">
+             <tree editable="false" create="false" delete="false" string="Credit Limit Forcing">
+                    <field name="user_id"/>
+                    <field name="date_forcing"/>
+                    <field name="type"/>
+                    <field name="source_document"/>
+                    <field name="partner_id" />
+                    <field name="amount" />
+             </tree>
+         </field>
+        </record>
+    
+        <record id="view_forcing_search" model="ir.ui.view">
+            <field name="name">force.tracking.search</field>
+            <field name="model">force.tracking</field>
+            <field name="arch" type="xml">
+                <search string="Credit Limit Forcing">
+                    <group expand="0" string="Group By">
+                        <filter string="User" domain="[]" context="{'group_by':'user_id'}"/>
+                        <filter string="Type Of Document" domain="[]" context="{'group_by':'type'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+    
+        <record id="action_forcing" model="ir.actions.act_window">
+            <field name="name">Credit Limit Forcing</field>
+            <field name="res_model">force.tracking</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="search_view_id" ref="view_forcing_search"/>
+            <field name="view_id" ref="view_forcing_tree"/>
+            <field name="context">{}</field>
+        </record>
+
+        <menuitem action="action_forcing" id="menu_report_forcing" string="Credit Limit Forcing" parent="base.next_id_64" sequence="10"/>
+    </data>
+</openerp>

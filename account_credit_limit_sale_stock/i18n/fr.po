@@ -1,0 +1,164 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+#	* account_credit_limit_sale_stock
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 8.0rc1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-07-09 08:55+0000\n"
+"PO-Revision-Date: 2014-07-09 08:55+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: account_credit_limit_sale_stock
+#: field:sale.order,commercial_partner_id:0
+msgid "Commercial Entity"
+msgstr "Entité commerciale"
+
+#. module: account_credit_limit_sale_stock
+#: field:force.tracking,create_uid:0
+msgid "Created by"
+msgstr "Crée par"
+
+#. module: account_credit_limit_sale_stock
+#: field:force.tracking,create_date:0
+msgid "Created on"
+msgstr "Crée le"
+
+#. module: account_credit_limit_sale_stock
+#: view:force.tracking:0
+#: model:ir.actions.act_window,name:account_credit_limit_sale_stock.action_forcing
+#: model:ir.ui.menu,name:account_credit_limit_sale_stock.menu_report_forcing
+msgid "Credit Limit Forcing"
+msgstr "Forçage de la limite de credit"
+
+#. module: account_credit_limit_sale_stock
+#: field:force.tracking,date_forcing:0
+msgid "Date"
+msgstr "Date"
+
+#. module: account_credit_limit_sale_stock
+#: code:addons/account_credit_limit_sale_stock/report/force_tracking.py:40
+#: selection:force.tracking,type:0
+#, python-format
+msgid "Delivery Order"
+msgstr "Bon de livraison"
+
+#. module: account_credit_limit_sale_stock
+#: view:sale.order:0
+msgid "Force Confirm Sale"
+msgstr "Forcer la confirmation de la vente"
+
+#. module: account_credit_limit_sale_stock
+#: view:stock.picking:0
+msgid "Force Transfer"
+msgstr "Forcer le transfere"
+
+#. module: account_credit_limit_sale_stock
+#: view:force.tracking:0
+msgid "Group By"
+msgstr "Grouper par"
+
+#. module: account_credit_limit_sale_stock
+#: field:force.tracking,id:0
+msgid "ID"
+msgstr "ID"
+
+#. module: account_credit_limit_sale_stock
+#: field:force.tracking,write_uid:0
+msgid "Last Updated by"
+msgstr "Dernière mise à jour par"
+
+#. module: account_credit_limit_sale_stock
+#: field:force.tracking,write_date:0
+msgid "Last Updated on"
+msgstr "Dernière mise à jour le"
+
+#. module: account_credit_limit_sale_stock
+#: field:res.partner,credit_limit_level3:0
+msgid "Level 3"
+msgstr "Niveau 3"
+
+#. module: account_credit_limit_sale_stock
+#: field:res.partner,credit_limit_level4:0
+msgid "Level 4"
+msgstr "Niveau 4"
+
+#. module: account_credit_limit_sale_stock
+#: field:stock.picking,blocked_message:0
+msgid "Message"
+msgstr "Message"
+
+#. module: account_credit_limit_sale_stock
+#: model:ir.model,name:account_credit_limit_sale_stock.model_res_partner
+msgid "Partner"
+msgstr "Partenaire"
+
+#. module: account_credit_limit_sale_stock
+#: model:ir.model,name:account_credit_limit_sale_stock.model_stock_picking
+msgid "Picking List"
+msgstr "Bon de livraison"
+
+#. module: account_credit_limit_sale_stock
+#: code:addons/account_credit_limit_sale_stock/report/force_tracking.py:41
+#: selection:force.tracking,type:0
+#, python-format
+msgid "Sale Order"
+msgstr "Bon de commande"
+
+#. module: account_credit_limit_sale_stock
+#: model:ir.model,name:account_credit_limit_sale_stock.model_sale_order
+msgid "Sales Order"
+msgstr "Commande de ventes"
+
+#. module: account_credit_limit_sale_stock
+#: field:force.tracking,source_document:0
+msgid "Source Document"
+msgstr "Document source"
+
+#. module: account_credit_limit_sale_stock
+#: help:sale.order,commercial_partner_id:0
+msgid "The commercial entity that will be used on Journal Entries for this invoice"
+msgstr "The commercial entity that will be used on Journal Entries for this invoice"
+
+#. module: account_credit_limit_sale_stock
+#: code:addons/account_credit_limit_sale_stock/model/sale.py:47
+#: code:addons/account_credit_limit_sale_stock/model/stock.py:54
+#, python-format
+msgid "This customer is blocked"
+msgstr "Ce client est bloqué"
+
+#. module: account_credit_limit_sale_stock
+#: field:force.tracking,type:0
+msgid "Type"
+msgstr "Type"
+
+#. module: account_credit_limit_sale_stock
+#: view:force.tracking:0
+msgid "Type Of Document"
+msgstr "Type de Document"
+
+#. module: account_credit_limit_sale_stock
+#: view:force.tracking:0
+#: field:force.tracking,user_id:0
+msgid "User"
+msgstr "Utilisateur"
+
+#. module: account_credit_limit_sale_stock
+#: code:addons/account_credit_limit_sale_stock/model/sale.py:47
+#: code:addons/account_credit_limit_sale_stock/model/stock.py:54
+#, python-format
+msgid "Warning !"
+msgstr "Attention !"
+
+#. module: account_credit_limit_sale_stock
+#: code:addons/account_credit_limit_sale_stock/model/stock.py:43
+#, python-format
+msgid "Warning ! This customer is blocked !"
+msgstr "Attention ! Ce client est bloqué !"
+

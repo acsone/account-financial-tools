@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_partner_property_form_inherit" model="ir.ui.view">
+            <field name="name">res.partner.property.form.inherit (carodec)</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="account.view_partner_property_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@string='Accounting']/group//group/field[@name='credit_limit']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//page[@string='Accounting']/group" position="after">
+                    <group name="credit_limit" string="Credit limit">
+                        <group>
+                            <label for="credit_limit_level1"/>
+                            <div name="credit_limit_level1">
+                                <field name="level1_blocking" class="oe_inline" on_change="level1_change(level1_blocking)"/>
+                                <field name="credit_limit_level1" class="oe_inline"/>
+                            </div>
+                            <label for="credit_limit_level2"/>
+                            <div name="credit_limit_level2">
+                                <field name="level2_blocking" class="oe_inline" on_change="level2_change(level2_blocking)"/>
+                                <field name="credit_limit_level2" class="oe_inline"/>
+                            </div>
+                            <field name="manual_blocking" on_change="manual_blocking_change(manual_blocking)"/>
+                         </group>
+                         <group>
+                            <field name="credit_limit" />
+                            <field name="blocked_customer" />
+                            <field name="amount_blocked" />
+                         </group>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
+        

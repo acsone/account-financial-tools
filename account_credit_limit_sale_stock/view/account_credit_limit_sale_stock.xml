@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Include JS file for the custom view to select domain from filters -->
+        <template id="assets_backend" name="filter_selection" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <link rel="stylesheet" href="/account_credit_limit_sale_stock/static/src/css/account_credit_limit.css"/>
+            </xpath>
+        </template>
+    </data>
+</openerp>
