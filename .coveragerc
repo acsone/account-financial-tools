@@ -1,6 +1,6 @@
 [report]
 include =
-    */account-financial-tools/*
+    */OCA/account-financial-tools/*
 
 omit =
     */tests/*
