@@ -60,8 +60,8 @@ class stock_picking(orm.Model):
             if (stock_picking_obj.partner_id.commercial_partner_id
                     .blocked_customer is True):
                 raise orm.except_orm(_('Warning !'),
-                                     _("This customer is blocked or this \
-                                     confirmation implies to blocked it"))
+                                     _("This customer is blocked or this "
+                                       "confirmation implies to blocked it"))
             else:
                 return res
         else:

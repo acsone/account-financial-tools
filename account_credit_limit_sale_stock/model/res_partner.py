@@ -41,8 +41,8 @@ class res_partner(orm.Model):
                 self.pool.get('account.invoice.line')\
                     .search(cr,
                             uid,
-                            [('invoice_id.commercial_partner_id', '=',
-                              partner.commercial_partner_id.id),
+                            [('invoice_id.commercial_partner_id',
+                              '=', partner.commercial_partner_id.id),
                              ('invoice_id.state', '=', 'draft')]
                             )
             stock_move_ids = stock_move_model\
@@ -51,8 +51,8 @@ class res_partner(orm.Model):
                         [('picking_id.picking_type_id.code', '=', 'outgoing'),
                          ('picking_id.state', '=', 'done'),
                          ('procurement_id', '<>', False),
-                         ('procurement_id.sale_line_id.order_id.\
-                         commercial_partner_id',
+                         ('procurement_id.sale_line_id.order_id.'
+                          'commercial_partner_id',
                           '=', partner.commercial_partner_id.id), '|',
                          ('procurement_id.sale_line_id.invoice_lines', '=',
                           False),
@@ -86,8 +86,8 @@ class res_partner(orm.Model):
                 self.pool.get('stock.move')\
                     .search(cr,
                             uid,
-                            [('procurement_id.sale_line_id.order_id.\
-                            commercial_partner_id', '=',
+                            [('procurement_id.sale_line_id.order_id.'
+                              'commercial_partner_id', '=',
                               partner.commercial_partner_id.id),
                              ('picking_id.state', 'not in',
                               ('draft', 'done', 'cancel')),

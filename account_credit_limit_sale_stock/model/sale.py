@@ -38,8 +38,8 @@ class sale_order(orm.Model):
                                string='Commercial Entity', type='many2one',
                                relation='res.partner', store=True,
                                readonly=True,
-                               help="The commercial entity that will be used on\
-                                Journal Entries for this invoice")
+                               help="""The commercial entity that will be used
+                               on Journal Entries for this invoice""")
                 }
 
     def action_button_confirm(self, cr, uid, ids, context={}):
