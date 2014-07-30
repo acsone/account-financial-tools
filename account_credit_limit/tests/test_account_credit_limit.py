@@ -29,19 +29,16 @@
 
 import openerp.tests.common as common
 from openerp import netsvc
-from anybox.testing.openerp.sharedsetup import SharedSetupTransactionCase
 from datetime import datetime, timedelta
 
 DB = common.DB
 ADMIN_USER_ID = common.ADMIN_USER_ID
 
 
-class TestAccountCreditLimit(SharedSetupTransactionCase):
+class TestAccountCreditLimit(common.TransactionCase):
 
-    _module_ns = "account_credit_limit"
-    _data_files = (
-        "account_credit_limit_test_data.xml",
-    )
+    def setUp(self):
+        super(TestAccountCreditLimit, self).setUp()
 
     def test_level1(self):
         partner_id = \
@@ -62,16 +59,16 @@ class TestAccountCreditLimit(SharedSetupTransactionCase):
                     {'partner_id': partner_id,
                      'date_due': date,
                      'account_id':
-                     self.ref('account_credit_limit.a_recv'),
+                     self.ref('account.a_recv'),
                      'journal_id':
-                     self.ref('account_credit_limit.sales_journal'),
+                     self.ref('account.sales_journal'),
                      })
         self.registry('account.invoice.line')\
             .create(self.cr,
                     self.uid,
                     {'invoice_id': invoice_id,
                      'name': 'test',
-                     'account_id': self.ref('account_credit_limit.a_sale'),
+                     'account_id': self.ref('account.a_sale'),
                      'price_unit': 2000.00,
                      'quantity': 1,
                      'product_id': product_id,
@@ -91,16 +88,16 @@ class TestAccountCreditLimit(SharedSetupTransactionCase):
                     self.uid,
                     {'partner_id': partner_id,
                      'date_due': date,
-                     'account_id': self.ref('account_credit_limit.a_recv'),
+                     'account_id': self.ref('account.a_recv'),
                      'journal_id':
-                     self.ref('account_credit_limit.sales_journal'),
+                     self.ref('account.sales_journal'),
                      })
         self.registry('account.invoice.line').\
             create(self.cr,
                    self.uid,
                    {'invoice_id': invoice_id,
                     'name': 'test',
-                    'account_id': self.ref('account_credit_limit.a_sale'),
+                    'account_id': self.ref('account.a_sale'),
                     'price_unit': 2000.00,
                     'quantity': 1,
                     'product_id': product_id,
@@ -131,16 +128,16 @@ class TestAccountCreditLimit(SharedSetupTransactionCase):
                     self.uid,
                     {'partner_id': partner_id,
                      'date_due': date,
-                     'account_id': self.ref('account_credit_limit.a_recv'),
+                     'account_id': self.ref('account.a_recv'),
                      'journal_id':
-                     self.ref('account_credit_limit.sales_journal'),
+                     self.ref('account.sales_journal'),
                      })
         self.registry('account.invoice.line')\
             .create(self.cr,
                     self.uid,
                     {'invoice_id': invoice_id,
                      'name': 'test',
-                     'account_id': self.ref('account_credit_limit.a_sale'),
+                     'account_id': self.ref('account.a_sale'),
                      'price_unit': 2000.00,
                      'quantity': 1,
                      'product_id': product_id,

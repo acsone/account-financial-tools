@@ -28,18 +28,15 @@
 #
 
 import openerp.tests.common as common
-from anybox.testing.openerp.sharedsetup import SharedSetupTransactionCase
 
 DB = common.DB
 ADMIN_USER_ID = common.ADMIN_USER_ID
 
 
-class TestAccountCreditLimitSaleStock(SharedSetupTransactionCase):
+class TestAccountCreditLimitSaleStock(common.TransactionCase):
 
-    _module_ns = "account_credit_limit"
-    _data_files = (
-        "../../account_credit_limit/tests/account_credit_limit_test_data.xml",
-    )
+    def setUp(self):
+        super(TestAccountCreditLimitSaleStock, self).setUp()
 
     def test_level3(self):
         partner_id = self.registry('res.partner').create(self.cr,
@@ -70,7 +67,8 @@ class TestAccountCreditLimitSaleStock(SharedSetupTransactionCase):
         self.registry('sale.order').action_button_confirm(self.cr,
                                                           self.uid,
                                                           [so_id],
-                                                          {'force': True})
+                                                          {'force': True,
+                                                           'validate': True})
         partner_obj = self.registry('res.partner').browse(self.cr,
                                                           self.uid,
                                                           [partner_id])
@@ -122,7 +120,8 @@ class TestAccountCreditLimitSaleStock(SharedSetupTransactionCase):
         self.registry('sale.order').action_button_confirm(self.cr,
                                                           self.uid,
                                                           [so_id],
-                                                          {'force': True})
+                                                          {'force': True,
+                                                           'validate': True})
         partner_obj = self.registry('res.partner').browse(self.cr,
                                                           self.uid,
                                                           [partner_id])
