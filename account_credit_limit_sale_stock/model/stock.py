@@ -65,48 +65,24 @@ class stock_picking(orm.Model):
             else:
                 return res
         else:
-            if (context.get('validate', False) is False):
-                context.update({'force': False})
-                values = {'stock_picking_id': stock_picking_obj.id,
-                          }
-
-                wizard_id = self.pool.get('warning.force.picking.wizard')\
-                    .create(cr, uid, values, context=context)
-                return {
-                    'name': _('Force Picking'),
-                    'view_mode': 'form',
-                    'view_id': False,
-                    'view_type': 'form',
-                    'res_model': 'warning.force.picking.wizard',
-                    'res_id': wizard_id,
-                    'type': 'ir.actions.act_window',
-                    'nodestroy': True,
-                    'target': 'new',
-                    'domain': '[]',
-                    'context': context,
-                }
-            else:
-                context.update({'validate': False, 'force': False})
-                return super(stock_picking, self).do_transfer(cr,
-                                                              uid,
-                                                              ids,
-                                                              context=context)
+            return super(stock_picking, self).do_transfer(cr,
+                                                          uid,
+                                                          ids,
+                                                          context=context)
 
 
 class warning_force_picking_wizard(orm.TransientModel):
     _name = 'warning.force.picking.wizard'
-    _columns = {'stock_picking_id': fields.many2one('stock.picking',
-                                                    string='Picking',
-                                                    required=True),
-                }
 
     def validate(self, cr, uid, ids, context=None):
-        this = self.browse(cr, uid, ids, context=context)
+        stock_picking_id = context.get('stock_picking_id')
+        stock_picking = self.pool.get('stock.picking')\
+            .browse(cr, uid, [stock_picking_id], context=context)[0]
         stock_move_model = self.pool.get('stock.move')
         stock_move_ids = stock_move_model\
             .search(cr,
                     uid,
-                    [('picking_id.id', '=', this.stock_picking_id.id),
+                    [('picking_id.id', '=', stock_picking.id),
                      ('procurement_id', '<>', False)])
         amount_order = 0.0
         for stock_move in stock_move_model.browse(cr,
@@ -120,14 +96,14 @@ class warning_force_picking_wizard(orm.TransientModel):
                 tax = tax + tax_id.amount
             amount_order = amount_order + sale_order_line.price_subtotal * tax
 
-        if this.stock_picking_id.partner_id.commercial_partner_id.level_amount \
+        if stock_picking.partner_id.commercial_partner_id.level_amount \
                 is None:
             amount = _('Manual Blocking')
         else:
             amount = amount_order
-        diff = this.stock_picking_id.partner_id\
+        diff = stock_picking.partner_id\
             .commercial_partner_id.credit_limit - \
-            this.stock_picking_id.partner_id.commercial_partner_id.level_amount
+            stock_picking.partner_id.commercial_partner_id.level_amount
         if (diff > 0):
             amount = amount - diff
         self.pool.get('force.tracking')\
@@ -135,16 +111,16 @@ class warning_force_picking_wizard(orm.TransientModel):
                     uid,
                     {'user_id': uid,
                      'type': 'delivery_order',
-                     'source_document': this.stock_picking_id.name,
-                     'partner_id': this.stock_picking_id.partner_id
+                     'source_document': stock_picking.name,
+                     'partner_id': stock_picking.partner_id
                         .commercial_partner_id.id,
                      'amount': str(amount),
                      })
-        context.update({'validate': True, 'force': True})
         return self.pool.get('stock.picking')\
             .do_transfer(cr,
                          uid,
-                         [this.stock_picking_id.id],
+                         [stock_picking.id],
                          context=context)
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

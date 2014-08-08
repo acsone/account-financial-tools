@@ -49,7 +49,7 @@ class res_partner(orm.Model):
                 .search(cr,
                         uid,
                         [('picking_id.picking_type_id.code', '=', 'outgoing'),
-                         ('picking_id.state', '=', 'done'),
+                         ('state', '=', 'done'),
                          ('procurement_id', '<>', False),
                          ('procurement_id.sale_line_id.order_id.'
                           'commercial_partner_id',
@@ -67,7 +67,7 @@ class res_partner(orm.Model):
                 tax = 1.0
                 for tax_id in tax_ids:
                     tax = tax + tax_id.amount
-                credit = credit + sale_order_line.price_subtotal * tax
+                credit = credit + (sale_order_line.price_unit * stock_move.product_qty) * tax
             res[partner.id] = partner.credit_limit_level2 + credit
         return res
 
