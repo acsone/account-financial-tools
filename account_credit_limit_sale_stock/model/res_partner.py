@@ -67,7 +67,8 @@ class res_partner(orm.Model):
                 tax = 1.0
                 for tax_id in tax_ids:
                     tax = tax + tax_id.amount
-                credit = credit + (sale_order_line.price_unit * stock_move.product_qty) * tax
+                credit = credit + (sale_order_line.price_unit *
+                                   stock_move.product_qty) * tax
             res[partner.id] = partner.credit_limit_level2 + credit
         return res
 
@@ -94,8 +95,8 @@ class res_partner(orm.Model):
                              ('procurement_id', '<>', False), '|',
                              ('procurement_id.sale_line_id.invoice_lines',
                               '=', False),
-                             ('procurement_id.sale_line_id.invoice_lines', 'in',
-                              draft_partner_account_invoice_line)]
+                             ('procurement_id.sale_line_id.invoice_lines',
+                              'in', draft_partner_account_invoice_line)]
                             )
             somme = 0.0
             for stock_move in self.pool.get('stock.move')\
