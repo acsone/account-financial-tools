@@ -114,7 +114,8 @@ class TestAccountCreditLimit(common.TransactionCase):
     def test_level2(self):
         partner_id = self.registry('res.partner').create(self.cr,
                                                          self.uid,
-                                                         {'name': 'partner_01'})
+                                                         {'name':
+                                                          'partner_01'})
         product_id = self.registry('product.product')\
             .create(self.cr,
                     self.uid,

@@ -45,10 +45,8 @@ class sale_order(orm.Model):
     def action_button_confirm(self, cr, uid, ids, context={}):
         sale_order_obj = self.browse(cr, uid, ids, context=context)[0]
         if context.get('force', False) is not True:
-            res = super(sale_order, self).action_button_confirm(cr,
-                                                                uid,
-                                                                ids,
-                                                                context=context)
+            res = super(sale_order, self)\
+                .action_button_confirm(cr, uid, ids, context=context)
             if ((sale_order_obj.commercial_partner_id.blocked_customer)
                     is True):
                 raise orm.except_orm(_('Warning !'),
@@ -109,7 +107,8 @@ class warning_force_sale_order_wizard(orm.TransientModel):
                               })
         context.update({'validate': True, 'force': True})
         return self.pool.get('sale.order')\
-            .action_button_confirm(cr, uid, [this.order_id.id], context=context)
+            .action_button_confirm(cr, uid, [this.order_id.id],
+                                   context=context)
 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

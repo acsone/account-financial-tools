@@ -41,7 +41,8 @@ class TestAccountCreditLimitSaleStock(common.TransactionCase):
     def test_level3(self):
         partner_id = self.registry('res.partner').create(self.cr,
                                                          self.uid,
-                                                         {'name': 'partner_01'})
+                                                         {'name': 'partner_01',
+                                                          })
         product_id = self.registry('product.product')\
             .create(self.cr,
                     self.uid,
@@ -56,14 +57,15 @@ class TestAccountCreditLimitSaleStock(common.TransactionCase):
                      'partner_shipping_id': partner_id,
                      })
 
-        self.registry('sale.order.line').create(self.cr,
-                                                self.uid,
-                                                {'order_id': so_id,
-                                                 'order_partner_id': partner_id,
-                                                 'name': "test",
-                                                 'product_id': product_id,
-                                                 'price_unit': 2000.0
-                                                 })
+        self.registry('sale.order.line')\
+            .create(self.cr,
+                    self.uid,
+                    {'order_id': so_id,
+                     'order_partner_id': partner_id,
+                     'name': "test",
+                     'product_id': product_id,
+                     'price_unit': 2000.0
+                     })
         self.registry('sale.order').action_button_confirm(self.cr,
                                                           self.uid,
                                                           [so_id],
@@ -94,7 +96,8 @@ class TestAccountCreditLimitSaleStock(common.TransactionCase):
     def test_level4(self):
         partner_id = self.registry('res.partner').create(self.cr,
                                                          self.uid,
-                                                         {'name': 'partner_01'})
+                                                         {'name': 'partner_01',
+                                                          })
         product_id = self.registry('product.product')\
             .create(self.cr,
                     self.uid,
@@ -112,7 +115,8 @@ class TestAccountCreditLimitSaleStock(common.TransactionCase):
         self.registry('sale.order.line').create(self.cr,
                                                 self.uid,
                                                 {'order_id': so_id,
-                                                 'order_partner_id': partner_id,
+                                                 'order_partner_id':
+                                                    partner_id,
                                                  'name': "test",
                                                  'product_id': product_id,
                                                  'price_unit': 2000.0
