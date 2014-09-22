@@ -55,59 +55,35 @@ class sale_order(orm.Model):
             else:
                 return res
         else:
-            if (context.get('validate', False) is False):
-                context.update({'validate': False, 'force': False})
-                values = {'order_id': sale_order_obj.id,
-                          }
-
-                wizard_id = self.pool.get('warning.force.sale.order.wizard')\
-                    .create(cr, uid, values, context=context)
-                return {
-                    'name': _('Force Order'),
-                    'view_mode': 'form',
-                    'view_id': False,
-                    'view_type': 'form',
-                    'res_model': 'warning.force.sale.order.wizard',
-                    'res_id': wizard_id,
-                    'type': 'ir.actions.act_window',
-                    'nodestroy': True,
-                    'target': 'new',
-                    'domain': '[]',
-                    'context': context,
-                }
-            else:
-                context.update({'validate': False, 'force': False})
-                return super(sale_order, self)\
-                    .action_button_confirm(cr, uid, ids, context=context)
+            return super(sale_order, self)\
+                .action_button_confirm(cr, uid, ids, context=context)
 
 
 class warning_force_sale_order_wizard(orm.TransientModel):
     _name = 'warning.force.sale.order.wizard'
-    _columns = {'order_id': fields.many2one('sale.order',
-                                            string='Order',
-                                            required=True),
-                }
 
     def validate(self, cr, uid, ids, context=None):
-        this = self.browse(cr, uid, ids, context=context)
-        if this.order_id.commercial_partner_id.level_amount is None:
+        sale_order_id = context.get('sale_order_id')
+        sale_order = self.pool.get('sale.order')\
+            .browse(cr, uid, [sale_order_id], context=context)
+        if sale_order.commercial_partner_id.level_amount is None:
             amount = _('Manual Blocking')
         else:
-            amount = this.order_id.amount_total
-        diff = this.order_id.commercial_partner_id.credit_limit -\
-            this.order_id.commercial_partner_id.level_amount
+            amount = sale_order.amount_total
+        diff = sale_order.commercial_partner_id.credit_limit -\
+            sale_order.commercial_partner_id.level_amount
         if (diff > 0):
             amount = amount - diff
         self.pool.get('force.tracking')\
             .create(cr, uid, {'user_id': uid,
                               'type': 'sale_order',
-                              'source_document': this.order_id.name,
-                              'partner_id': this.order_id.partner_id.id,
+                              'source_document': sale_order.name,
+                              'partner_id': sale_order.partner_id.id,
                               'amount': str(amount),
                               })
-        context.update({'validate': True, 'force': True})
+        context.update({'force': True})
         return self.pool.get('sale.order')\
-            .action_button_confirm(cr, uid, [this.order_id.id],
+            .action_button_confirm(cr, uid, [sale_order.id],
                                    context=context)
 
 

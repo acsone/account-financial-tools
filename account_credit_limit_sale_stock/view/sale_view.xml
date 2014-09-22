@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
-        <record id="view_order_form" model="ir.ui.view">
-                    <field name="name">sale.order.form (account credit limit)</field>
-                    <field name="model">sale.order</field>
-                    <field name="inherit_id" ref="sale.view_order_form"/>
-                    <field name="arch" type="xml">
-                        <xpath expr="//button[@string='Confirm Sale']" position="after">
-                            <button name="action_button_confirm" states="draft" string="Force Confirm Sale" type="object" groups="base.group_user" context="{'force': True}" />
-                             <button name="action_button_confirm" states="sent" string="Force Confirm Sale" class="oe_highlight" type="object" groups="base.group_user" context="{'force': True} "/>
-                        </xpath>
-                    </field>
-        </record>
-        
         <record id="wizard_force_sale_order" model="ir.ui.view">
             <field name="name">warning.force.sale.order.wizard.form</field>
             <field name="model">warning.force.sale.order.wizard</field>
@@ -30,6 +18,29 @@
                     </footer>
                 </form>
             </field>
+        </record>
+        
+        <record id="sale_force_wizard_action" model="ir.actions.act_window">
+            <field name="name">Force Sale Order</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">warning.force.sale.order.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="wizard_force_sale_order" />
+            <field name="target">new</field>
+            <field name="context">{'sale_order_id': active_id, 'force': True}</field>
+        </record>
+    
+        <record id="view_order_form" model="ir.ui.view">
+                    <field name="name">sale.order.form (account credit limit)</field>
+                    <field name="model">sale.order</field>
+                    <field name="inherit_id" ref="sale.view_order_form"/>
+                    <field name="arch" type="xml">
+                        <xpath expr="//button[@string='Confirm Sale']" position="after">
+                            <button name="%(sale_force_wizard_action)d" states="draft" string="Force Confirm Sale" type="action" groups="base.group_user" context="{'force': True}" />
+                             <button name="%(sale_force_wizard_action)d" states="sent" string="Force Confirm Sale" class="oe_highlight" type="action" groups="base.group_user" context="{'force': True} "/>
+                        </xpath>
+                    </field>
         </record>
     </data>
 </openerp>
