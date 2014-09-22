@@ -42,7 +42,9 @@ class sale_order(orm.Model):
                                on Journal Entries for this invoice""")
                 }
 
-    def action_button_confirm(self, cr, uid, ids, context={}):
+    def action_button_confirm(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
         sale_order_obj = self.browse(cr, uid, ids, context=context)[0]
         if context.get('force', False) is not True:
             res = super(sale_order, self)\

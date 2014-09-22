@@ -50,7 +50,9 @@ class stock_picking(orm.Model):
                                                    string='Message'),
                 }
 
-    def do_transfer(self, cr, uid, ids, context={}):
+    def do_transfer(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
         stock_picking_obj = self.browse(cr, uid, ids, context=context)[0]
         if context.get('force', False) is not True:
             res = super(stock_picking, self).do_transfer(cr,
