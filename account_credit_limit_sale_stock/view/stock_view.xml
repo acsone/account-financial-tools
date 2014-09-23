@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
-    
          <record id="wizard_force_picking" model="ir.ui.view">
             <field name="name">warning.force.picking.wizard.form</field>
             <field name="model">warning.force.picking.wizard</field>
@@ -20,18 +19,6 @@
                 </form>
             </field>
         </record>
-
-        <record id="stock_force_wizard_action" model="ir.actions.act_window">
-            <field name="name">Force Picking</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">warning.force.picking.wizard</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">form</field>
-            <field name="view_id" ref="wizard_force_picking" />
-            <field name="target">new</field>
-            <field name="context">{'stock_picking_id': active_id, 'force': True}</field>
-        </record>
-    
         <record id="view_picking_form" model="ir.ui.view">
                     <field name="name">stock.picking.form (account credit limit)</field>
                     <field name="model">stock.picking</field>
@@ -42,15 +29,32 @@
                                 <field name="blocked_message" attrs="{'invisible':[('blocked_message', '=', '')]}" class="oe_highlight_2"/>
                             </div>
                         </xpath>
-                        <xpath expr="//button[@string='Transfer']" position="after">
-                             <button name="%(stock_force_wizard_action)d" type="action" states="assigned" string="Force Transfer" groups="stock.group_stock_user" class="oe_highlight" attrs="{'invisible': ['|', ('pack_operation_exist', '=', True)]}"/>
-                        </xpath>
                         <xpath expr="//button[@string='Transfer']" position="attributes">
                             <attribute name="context">{'force': False}</attribute>
                         </xpath>
                     </field>
         </record>
-        
+        <record id="stock_force_wizard_action" model="ir.actions.act_window">
+            <field name="name">Force Picking</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">warning.force.picking.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="wizard_force_picking" />
+            <field name="target">new</field>
+            <field name="context">{'transfer_detail_id': active_id, 'force': True}</field>
+        </record>
+        <record id="view_stock_enter_transfer_details" model="ir.ui.view">
+            <field name="name">Enter transfer details (account_credit_limit_sale_stock)</field>
+            <field name="model">stock.transfer_details</field>
+            <field name="inherit_id" ref="stock.view_stock_enter_transfer_details"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='do_detailed_transfer']" position="after">
+                    -
+                    <button name="%(stock_force_wizard_action)d" string="Force Transfer" type="action" class="oe_highlight"/>
+                </xpath>
+            </field>
+        </record>
        
     </data>
 </openerp>
