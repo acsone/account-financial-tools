@@ -81,13 +81,13 @@ msgstr "Dernière mise à jour le"
 
 #. module: account_credit_limit_sale_stock
 #: field:res.partner,credit_limit_level3:0
-msgid "Level 3"
-msgstr "Niveau 3"
+msgid "CL exceeded on INV and CDO"
+msgstr "Dépassement de LC sur FAC et NEC"
 
 #. module: account_credit_limit_sale_stock
 #: field:res.partner,credit_limit_level4:0
-msgid "Level 4"
-msgstr "Niveau 4"
+msgid "CL exceeded on INV, CDO and Open SO"
+msgstr "Dépassement de LC sur FAC + NEC + BCC ouverts"
 
 #. module: account_credit_limit_sale_stock
 #: field:stock.picking,blocked_message:0

@@ -168,23 +168,24 @@ class res_partner(orm.Model):
                     res[partner.id] = partner.credit_limit_level4
         return res
 
-    _columns = {'credit_limit_level3': fields.function(_compute_level3,
-                                                       type="float",
-                                                       string='Level 3'),
-                'credit_limit_level4': fields.function(_compute_level4,
-                                                       type="float",
-                                                       string='Level 4'),
-                'level3_blocking': fields.boolean(),
-                'level4_blocking': fields.boolean(),
-                'blocked_customer': fields.function(_is_blocked,
-                                                    type='boolean',
-                                                    string="Blocked Customer"),
-                'amount_blocked': fields.function(_compute_amount_blocked,
-                                                  type='char',
-                                                  string='Amount Blocked'),
-                'level_amount': fields.function(_level_amount, type='float',
-                                                string='Level Amount'),
-                }
+    _columns = {
+        'credit_limit_level3':
+            fields.function(_compute_level3, type="float",
+                            string='CL exceeded on INV and CDO'),
+        'credit_limit_level4':
+            fields.function(_compute_level4, type="float",
+                            string='CL exceeded on INV, CDO and Open SO'),
+        'level3_blocking': fields.boolean(),
+        'level4_blocking': fields.boolean(),
+        'blocked_customer': fields.function(_is_blocked,
+                                            type='boolean',
+                                            string="Blocked Customer"),
+        'amount_blocked': fields.function(_compute_amount_blocked,
+                                          type='char',
+                                          string='Amount Blocked'),
+        'level_amount': fields.function(_level_amount, type='float',
+                                        string='Level Amount'),
+    }
 
     def levels_change(self, cr, uid, ids):
         value = super(res_partner, self).levels_change(cr, uid, ids)

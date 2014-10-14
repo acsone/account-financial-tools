@@ -121,25 +121,26 @@ class res_partner(orm.Model):
                 res[partner.id] = None
         return res
 
-    _columns = {'credit_limit_level1': fields.function(_compute_level1,
-                                                       type="float",
-                                                       string='Level 1'),
-                'credit_limit_level2': fields.function(_compute_level2,
-                                                       type="float",
-                                                       string='Level 2'),
-                'manual_blocking': fields.boolean(string="Manual Blocking"),
-                'level1_blocking': fields.boolean(),
-                'level2_blocking': fields.boolean(),
-                'blocked_customer': fields.function(_is_blocked,
-                                                    type='boolean',
-                                                    string="Blocked Customer"),
-                'amount_blocked': fields.function(_compute_amount_blocked,
-                                                  type='char',
-                                                  string='Amount Blocked'),
-                'level_amount': fields.function(_level_amount,
-                                                type='float',
-                                                string='Level Amount'),
-                }
+    _columns = {
+        'credit_limit_level1': fields.function(_compute_level1,
+                                               type="float",
+                                               string='Exceeded due'),
+        'credit_limit_level2': fields.function(_compute_level2,
+                                               type="float",
+                                               string='CL exceeded on INV'),
+        'manual_blocking': fields.boolean(string="Manual Blocking"),
+        'level1_blocking': fields.boolean(),
+        'level2_blocking': fields.boolean(),
+        'blocked_customer': fields.function(_is_blocked,
+                                            type='boolean',
+                                            string="Blocked Customer"),
+        'amount_blocked': fields.function(_compute_amount_blocked,
+                                          type='char',
+                                          string='Amount Blocked'),
+        'level_amount': fields.function(_level_amount,
+                                        type='float',
+                                        string='Level Amount'),
+    }
 
     def levels_change(self, cr, uid, ids):
         value = {}

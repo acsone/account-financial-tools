@@ -27,13 +27,13 @@ msgstr "Limite de credit"
 
 #. module: account_credit_limit
 #: field:res.partner,credit_limit_level1:0
-msgid "Level 1"
-msgstr "Niveau 1"
+msgid "Exceeded due"
+msgstr "Dépassement échu "
 
 #. module: account_credit_limit
 #: field:res.partner,credit_limit_level2:0
-msgid "Level 2"
-msgstr "Niveau 2"
+msgid "CL exceeded on INV"
+msgstr "Dépassement de LC sur FAC"
 
 #. module: account_credit_limit
 #: field:res.partner,manual_blocking:0
