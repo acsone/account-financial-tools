@@ -34,110 +34,130 @@ import time
 class res_partner(orm.Model):
     _inherit = 'res.partner'
 
-    def _compute_level1(self, cr, uid, ids, field_name, arg, context=None):
+    def _compute_multi_credit_limit(self, cr, uid, ids, field_name, arg,
+                                    context=None):
         res = {}
-        for partner in self.browse(cr, uid, ids):
-            date = time.strftime('%Y-%m-%d', time.localtime())
-            account_ids = \
-                self.pool.get('account.account').search(cr,
-                                                        uid,
-                                                        [('type',
-                                                          'in',
-                                                          ('receivable',
-                                                           'payable'))],
-                                                        context=context)
-            move_line_ids = \
-                self.pool.get('account.move.line')\
-                    .search(cr,
-                            uid,
-                            [('partner_id.id', '=',
-                              partner.commercial_partner_id.id),
-                             ('account_id.id', 'in', account_ids),
-                             ('reconcile_id', '=', False), '|',
-                             ('date_maturity', '=', False),
-                             ('date_maturity', '<', date)
-                             ],
-                            context=context)
-            somme = 0
-            for line in \
-                self.pool.get('account.move.line').browse(cr,
-                                                          uid,
-                                                          move_line_ids,
-                                                          context=context):
-                somme = somme + (line.debit - line.credit)
-            res[partner.id] = somme
+        fields = ['id', 'commercial_partner_id', 'credit_limit',
+                  'manual_blocking', 'level1_blocking', 'level2_blocking',
+                  'credit', 'debit']
+        for partner in self.read(cr, uid, ids, fields):
+            res[partner['id']] = {}
+            credit_limit_level1 = self._compute_level1(cr, uid, partner,
+                                                       context=context)
+            res[partner['id']].update({'credit_limit_level1':
+                                       credit_limit_level1})
+            credit_limit_level2 = self._compute_level2(cr, uid, partner,
+                                                       context=context)
+            res[partner['id']].update({'credit_limit_level2':
+                                       credit_limit_level2})
+            blocked_customer = self._is_blocked(cr, uid, partner,
+                                                res[partner['id']],
+                                                context=context)
+            res[partner['id']].update({'blocked_customer': blocked_customer})
+            amount_blocked = self._compute_amount_blocked(cr, uid, partner,
+                                                          res[partner['id']],
+                                                          context=context)
+            res[partner['id']].update({'amount_blocked': amount_blocked})
+            level_amount = self._level_amount(cr, uid, partner,
+                                              res[partner['id']],
+                                              context=context)
+            res[partner['id']].update({'level_amount': level_amount})
         return res
 
-    def _compute_level2(self, cr, uid, ids, field_name, arg, context=None):
-        res = {}
-        for partner in self.browse(cr, uid, ids):
-            res[partner.id] = partner.credit
-        return res
+    def _compute_level1(self, cr, uid, partner, context=None):
+        date = time.strftime('%Y-%m-%d', time.localtime())
+        account_ids = \
+            self.pool.get('account.account').search(cr,
+                                                    uid,
+                                                    [('type',
+                                                      'in',
+                                                      ('receivable',
+                                                       'payable'))],
+                                                    context=context)
+        move_line_ids = \
+            self.pool.get('account.move.line')\
+                .search(cr,
+                        uid,
+                        [('partner_id.id', '=',
+                          partner['commercial_partner_id'][0]),
+                         ('account_id.id', 'in', account_ids),
+                         ('reconcile_id', '=', False), '|',
+                         ('date_maturity', '=', False),
+                         ('date_maturity', '<', date)
+                         ],
+                        context=context)
+        somme = 0
+        for line in \
+            self.pool.get('account.move.line').read(cr,
+                                                    uid,
+                                                    move_line_ids,
+                                                    context=context):
+            somme = somme + (line['debit'] - line['credit'])
+        return somme
 
-    def _is_blocked(self, cr, uid, ids, field_name, arg, context=None):
-        res = {}
-        for partner in self.browse(cr, uid, ids):
-            blocked = False
-            if (partner.level1_blocking is True):
-                if (partner.credit_limit_level1 > partner.credit_limit):
-                    blocked = True
-            elif (partner.level2_blocking is True):
-                if (partner.credit_limit_level2 > partner.credit_limit):
-                    blocked = True
-            elif (partner.manual_blocking is True):
+    def _compute_level2(self, cr, uid, partner, context=None):
+        return partner['credit']
+
+    def _is_blocked(self, cr, uid, partner, values, context=None):
+        blocked = False
+        if (partner['level1_blocking'] is True):
+            if (values['credit_limit_level1'] > partner['credit_limit']):
                 blocked = True
-            res[partner.id] = blocked
-        return res
+        elif (partner['level2_blocking'] is True):
+            if (values['credit_limit_level2'] > partner['credit_limit']):
+                blocked = True
+        elif (partner['manual_blocking'] is True):
+            blocked = True
+        return blocked
 
-    def _compute_amount_blocked(self, cr, uid, ids, field_name, arg,
-                                context=None):
-        res = {}
-        for partner in self.browse(cr, uid, ids):
-            if partner.blocked_customer:
-                if (partner.level1_blocking is True):
-                    blocked = partner.credit_limit_level1 - \
-                        partner.credit_limit
-                elif (partner.level2_blocking is True):
-                    blocked = partner.credit_limit_level2 - \
-                        partner.credit_limit
-                elif (partner.manual_blocking is True):
-                    blocked = "Manual Blocking"
-                else:
-                    blocked = "N/A"
+    def _compute_amount_blocked(self, cr, uid, partner, values, context=None):
+        if values['blocked_customer']:
+            if (partner['level1_blocking'] is True):
+                blocked = values['credit_limit_level1'] - \
+                    partner['credit_limit']
+            elif (partner['level2_blocking'] is True):
+                blocked = values['credit_limit_level2'] - \
+                    partner['credit_limit']
+            elif (partner['manual_blocking'] is True):
+                blocked = "Manual Blocking"
             else:
                 blocked = "N/A"
-            res[partner.id] = str(blocked)
-        return res
+        else:
+            blocked = "N/A"
+        return str(blocked)
 
-    def _level_amount(self, cr, uid, ids, context=None):
-        res = {}
-        for partner in self.browse(cr, uid, ids):
-            res[partner.id] = None
-            if (partner.level1_blocking is True):
-                res[partner.id] = partner.credit_limit_level1
-            elif (partner.level2_blocking is True):
-                res[partner.id] = partner.credit_limit_level2
-            elif (partner.manual_blocking is True):
-                res[partner.id] = None
+    def _level_amount(self, cr, uid, partner, values, context=None):
+        res = None
+        if (partner['level1_blocking'] is True):
+            res = values['credit_limit_level1']
+        elif (partner['level2_blocking'] is True):
+            res = values['credit_limit_level2']
+        elif (partner['manual_blocking'] is True):
+            res = None
         return res
 
     _columns = {
-        'credit_limit_level1': fields.function(_compute_level1,
+        'credit_limit_level1': fields.function(_compute_multi_credit_limit,
+                                               multi='compute_creditlimit',
                                                type="float",
                                                string='Exceeded due'),
-        'credit_limit_level2': fields.function(_compute_level2,
+        'credit_limit_level2': fields.function(_compute_multi_credit_limit,
+                                               multi='compute_creditlimit',
                                                type="float",
                                                string='CL exceeded on INV'),
         'manual_blocking': fields.boolean(string="Manual Blocking"),
         'level1_blocking': fields.boolean(),
         'level2_blocking': fields.boolean(),
-        'blocked_customer': fields.function(_is_blocked,
+        'blocked_customer': fields.function(_compute_multi_credit_limit,
+                                            multi='compute_creditlimit',
                                             type='boolean',
                                             string="Blocked Customer"),
-        'amount_blocked': fields.function(_compute_amount_blocked,
+        'amount_blocked': fields.function(_compute_multi_credit_limit,
+                                          multi='compute_creditlimit',
                                           type='char',
                                           string='Amount Blocked'),
-        'level_amount': fields.function(_level_amount,
+        'level_amount': fields.function(_compute_multi_credit_limit,
+                                        multi='compute_creditlimit',
                                         type='float',
                                         string='Level Amount'),
     }
