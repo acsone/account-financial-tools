@@ -175,8 +175,8 @@ class res_partner(orm.Model):
         'credit_limit_level4':
             fields.function(_compute_level4, type="float",
                             string='CL exceeded on INV, CDO and Open SO'),
-        'level3_blocking': fields.boolean(),
-        'level4_blocking': fields.boolean(),
+        'level3_blocking': fields.boolean(string='Level 3 Blocking'),
+        'level4_blocking': fields.boolean(string='Level 4 Blocking'),
         'blocked_customer': fields.function(_is_blocked,
                                             type='boolean',
                                             string="Blocked Customer"),
