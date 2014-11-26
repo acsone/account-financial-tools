@@ -84,13 +84,20 @@ class stock_picking(orm.Model):
                                                       stock_move_ids,
                                                       context=context):
                 sale_order_line = stock_move.procurement_id.sale_line_id
-                tax_ids = sale_order_line.tax_id
-                tax = 1.0
-                for tax_id in tax_ids:
-                    tax = tax + tax_id.amount
+                amount_tax = 0.0
+                for c in self.pool.get('account.tax')\
+                        .compute_all(cr, uid, sale_order_line.tax_id,
+                                     sale_order_line.price_unit *
+                                     (1-(sale_order_line.discount or
+                                         0.0)/100.0),
+                                     stock_move.product_uom_qty,
+                                     sale_order_line.product_id,
+                                     sale_order_line.order_id.partner_id
+                                     )['taxes']:
+                    amount_tax += c.get('amount', 0.0)
                 amount_order = amount_order +\
                     ((sale_order_line.price_unit *
-                      stock_move.product_uom_qty) * tax)
+                      stock_move.product_uom_qty) + amount_tax)
             if stock_picking_obj.partner_id.commercial_partner_id.level_amount\
                     is None:
                 amount = _('Manual Blocking')
