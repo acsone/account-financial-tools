@@ -11,7 +11,7 @@ function account_credit_limit_pos_models(instance, module){ //module is instance
         var res_partner_model = pos_model.find_model('res.partner');
         if (Object.size(res_partner_model) == 1) {
             var res_partner_index = parseInt(Object.keys(res_partner_model)[0]);
-            pos_model.models[res_partner_index].fields.push('property_payment_term','blocked_customer','amount_blocked')
+            pos_model.models[res_partner_index].fields.push('property_payment_term')
         }
     };
     
