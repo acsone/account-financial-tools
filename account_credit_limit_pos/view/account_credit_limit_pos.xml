@@ -5,6 +5,7 @@
             <xpath expr="." position="inside">
                  <script type="text/javascript" src="/account_credit_limit_pos/static/src/js/account_credit_limit_pos.js"></script>
                  <script type="text/javascript" src="/account_credit_limit_pos/static/src/js/account_credit_limit_pos_model.js"></script>
+                 <script type="text/javascript" src="/account_credit_limit_pos/static/src/js/account_credit_limit_pos_screen.js"></script>
             </xpath>
         </template>
     </data>

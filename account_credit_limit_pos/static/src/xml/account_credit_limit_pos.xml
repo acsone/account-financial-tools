@@ -3,8 +3,6 @@
         <t t-extend="ClientListScreenWidget" t-operation="replace">
             <t t-jquery=".clientlist-screen .client-list thead tr" t-operation="append">
                 <th>Payment Term</th>
-                <th>Blocked Customer</th>
-                <th>Amount Blocked</th> 
             </t>
         </t>
         <t t-extend="ClientLine" t-operation="replace">
@@ -14,14 +12,7 @@
                 </t>
                 <t t-if="partner.property_payment_term == False">
                     <td><t t-esc="N/A" /></td>
-                </t>            
-                <t t-if="partner.blocked_customer == true">
-                    <td style="background-color:#C97272">Blocked</td>
                 </t>
-                 <t t-if="partner.blocked_customer == false">
-                    <td><t t-esc="partner.amount_blocked" /></td>
-                </t>
-                <td><t t-esc="partner.amount_blocked" /></td>
             </t>
         </t>
 </templates>
