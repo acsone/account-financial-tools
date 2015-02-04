@@ -9,8 +9,10 @@
             <field name="arch" type="xml">
                 <form string="Post Journal Entries" version="7.0">
                     <group>
-                        <field name="journal_ids"/>
-                        <field name="period_ids"/>
+                        <field name="journal_ids" on_change="on_change_journal_period(journal_ids, period_ids, exclude_move_ids)"/>
+                        <field name="period_ids" on_change="on_change_journal_period(journal_ids, period_ids, exclude_move_ids)"/>
+                        <field name="exclude_move_ids" on_change="on_change_journal_period(journal_ids, period_ids, exclude_move_ids)"
+                               domain="[('id','=',-1)]"/>
                     </group>
                     <footer>
                         <button string="Approve" name="validate_move" type="object" class="oe_highlight"/>
