@@ -29,7 +29,21 @@
 
 
 from openerp.osv import fields, orm
+from openerp import fields as new_field
 from openerp.tools.translate import _
+
+
+class stock_move(orm.Model):
+    _inherit = 'stock.move'
+
+    procurement_id = new_field.Many2one(auto_join=True)
+    picking_id = new_field.Many2one(auto_join=True)
+
+
+class procurement_order(orm.Model):
+    _inherit = 'procurement.order'
+
+    sale_line_id = new_field.Many2one(auto_join=True)
 
 
 class stock_picking(orm.Model):

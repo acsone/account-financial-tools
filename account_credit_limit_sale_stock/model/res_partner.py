@@ -91,7 +91,7 @@ class res_partner(orm.Model):
                               'commercial_partner_id', '=',
                               partner.commercial_partner_id.id),
                              ('picking_id.state', 'not in',
-                              ('draft', 'done', 'cancel')),
+                              ('draft', 'cancel')),
                              ('procurement_id', '<>', False), '|',
                              ('procurement_id.sale_line_id.invoice_lines',
                               '=', False),
@@ -110,7 +110,7 @@ class res_partner(orm.Model):
                 for tax_id in tax_ids:
                     tax = tax + tax_id.amount
                 somme = somme + sale_order_line.price_subtotal * tax
-            res[partner.id] = partner.credit_limit_level3 + somme
+            res[partner.id] = partner.credit_limit_level2 + somme
         return res
 
     def _is_blocked(self, cr, uid, ids, field_name, arg, context=None):

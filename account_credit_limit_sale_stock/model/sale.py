@@ -28,7 +28,21 @@
 #
 
 from openerp.osv import fields, orm
+from openerp import fields as new_field
 from openerp.tools.translate import _
+
+
+class sale_order_line(orm.Model):
+    _inherit = 'sale.order.line'
+
+    invoice_lines = new_field.Many2many(auto_join=True)
+    order_id = new_field.Many2one(auto_join=True)
+
+
+class account_invoice_line(orm.Model):
+    _inherit = 'account.invoice.line'
+
+    invoice_id = new_field.Many2one(auto_join=True)
 
 
 class sale_order(orm.Model):
