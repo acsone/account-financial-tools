@@ -15,6 +15,8 @@ openerp.account_move_line_search_extension = function (instance) {
             this.current_partner = null;
             this.current_journal = null;
             this.current_period = null;
+            this.current_amount_min = 0;
+            this.current_amount_max = 0;
             this.options.addable = false;
             this.set_user_groups();
         },
@@ -49,6 +51,18 @@ openerp.account_move_line_search_extension = function (instance) {
                     self.current_period = this.value === '' ? null : this.value;
                     self.do_search(self.last_domain, self.last_context, self.last_group_by);
                 });
+            this.$el.parent().find('.oe_account_select_amount_min').change(function() {
+                self.current_amount_min = this.value === '' ? 0 : this.value;
+                if (self.current_amount_max) {
+                    self.do_search(self.last_domain, self.last_context, self.last_group_by);
+                }
+            });
+            this.$el.parent().find('.oe_account_select_amount_max').change(function() {
+                self.current_amount_max = this.value === '' ? 0 : this.value;
+                if (self.current_amount_min) {
+                    self.do_search(self.last_domain, self.last_context, self.last_group_by);
+                }
+            });
         },
 
         set_user_groups: function() {
@@ -98,6 +112,11 @@ openerp.account_move_line_search_extension = function (instance) {
             if (self.current_partner) domain.push(['partner_id.name', 'ilike', self.current_partner]);
             if (self.current_journal) domain.push(['journal_id', '=', self.current_journal]);
             if (self.current_period) domain.push('|',['period_id.code', 'ilike', self.current_period],['period_id.name', 'ilike', self.current_period]);
+            if (self.current_amount_min && self.current_amount_max) {
+                amount_min = parseFloat(self.current_amount_min)
+                amount_max = parseFloat(self.current_amount_max)
+                domain.push('|','&', ['credit', '>=', amount_min], ['credit', '<=', amount_max],'&',['debit', '>=', amount_min],['debit', '<=', amount_max]);
+            }
             //_.each(domain, function(x) {console.log('amlse, aml_search_domain, domain_part = ', x)});
             return domain;
         },
