@@ -109,7 +109,8 @@ class res_partner(orm.Model):
                 tax = 1.0
                 for tax_id in tax_ids:
                     tax = tax + tax_id.amount
-                somme = somme + sale_order_line.price_subtotal * tax
+                somme = somme + (sale_order_line.price_unit *
+                                 stock_move.product_qty) * tax
             res[partner.id] = partner.credit_limit_level2 + somme
         return res
 
