@@ -91,7 +91,7 @@ class res_partner(orm.Model):
                              ('procurement_id.sale_line_id.order_id.'
                               'commercial_partner_id', '=',
                               partner.commercial_partner_id.id),
-                             ('picking_id.state', 'not in',
+                             ('state', 'not in',
                               ('draft', 'cancel')),
                              ('procurement_id', '<>', False), '|',
                              ('procurement_id.sale_line_id.invoice_lines',
