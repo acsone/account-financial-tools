@@ -87,7 +87,8 @@ class res_partner(orm.Model):
                 self.pool.get('stock.move')\
                     .search(cr,
                             uid,
-                            [('procurement_id.sale_line_id.order_id.'
+                            [('picking_id.picking_type_id.code', '=', 'outgoing'),
+                             ('procurement_id.sale_line_id.order_id.'
                               'commercial_partner_id', '=',
                               partner.commercial_partner_id.id),
                              ('picking_id.state', 'not in',
