@@ -25,21 +25,6 @@
  'maintainter': 'Camptocamp',
  'category': 'Accounting',
  'depends': ['account'],
- 'description': """
-Balance for a line
-==================
-
-Add a balance total for grouped lines in move line view.
-
-Balance field will only be shown when move lines are grouped by account
-or filtered by account.
-
-Contributors
-------------
-
-* Vincent revaville <vincent.renaville@camptocamp.com>
-* Yannick Vaucher <yannick.vaucher@camptocamp.com>
-""",
  'website': 'http://www.camptocamp.com',
  'data': ['account_move_line_view.xml'],
  'tests': [],

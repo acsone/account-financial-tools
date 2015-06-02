@@ -26,19 +26,6 @@
     'license': 'AGPL-3',
     'author': "Noviat,Odoo Community Association (OCA)",
     'category': 'Accounting & Finance',
-    'description': """
-Assets Management Excel reporting
----------------------------------
-
-This module adds Excel reporting to Financial Assets Management Module.
-
-Assistance
-----------
-
-Contact info@noviat.com if you require support or functional extensions
-for this module.
-
-    """,
     'depends': ['account_asset_management', 'report_xls'],
     'data': [
         'wizard/account_asset_report_wizard.xml',
