@@ -1,3 +1,6 @@
+.. image:: https://img.shields.io/badge/licence-AGPL--3-blue.svg
+    :alt: License: AGPL-3
+
 Automatic creation of fiscal year sequences
 ===========================================
 
@@ -11,16 +14,41 @@ a specific fiscal year sequence starting at 1 is created automatically.
 The module also replaces %(year)s by %(fy)s in the default prefix
 for new journals, assuming it is a safer default.
 
-Caveat
-------
+Installation
+============
 
-/!\ If you change %(year)s to %(fy)s on a sequence that has
+This module depends on :
+- account
+
+This modules are parts of the OCA/account-financial-tools suite.
+
+Configuration
+=============
+
+To configure this module, you need to:
+
+ * go to ...
+
+Usage
+=====
+
+Before you use this module, you must read this carefully:
+
+ /!\ If you change %(year)s to %(fy)s on a sequence that has
 already been used for the current fiscal year, make sure to manually
 create the fiscal year sequence for the current fiscal year and
 initialize it's next number to the correct value.
 For this reason, the module will forbid the user to change
 a sequence from %(year)s to %(fy)s if it's next number is > 1.
 
+For further information, please visit:
+
+ * https://www.odoo.com/forum/help-1
+
+Known issues / Roadmap
+======================
+
+ * ...
 
 Bug Tracker
 ===========
@@ -30,14 +58,21 @@ In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us smashing it by providing a detailed and welcomed feedback
 `here <https://github.com/OCA/account-financial-tools/issues/new?body=module:%20account_auto_fy_sequence%0Aversion:%208.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
-
 Credits
--------
+=======
 
-Author:
+* Stéphane Bidoul <stephane.bidoul@acsone.eu>
+* Laetitia Gangloff <laetitia.gangloff@acsone.eu>
 
-* Stéphane Bidoul (ACSONE)
+Maintainer
+----------
 
-Contributors: 
+.. image:: http://odoo-community.org/logo.png
+   :alt: Odoo Community Association
+   :target: http://odoo-community.org
 
-* Laetitia Gangloff (ACSONE)
+This module is maintained by the OCA.
+
+OCA, or the Odoo Community Association, is a nonprofit organization whose mission is to support the collaborative development of Odoo features and promote its widespread use.
+
+To contribute to this module, please visit http://odoo-community.org.

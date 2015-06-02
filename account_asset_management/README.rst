@@ -1,8 +1,8 @@
 .. image:: https://img.shields.io/badge/licence-AGPL--3-blue.svg
     :alt: License: AGPL-3
 
-Financial asset management.
-===========================
+Assets Management
+=================
 
 This Module manages the assets owned by a company. It will keep
 track of depreciation's occurred on those assets. And it allows to create
@@ -18,47 +18,72 @@ Excel based reporting is available via the 'account_asset_management_xls' module
 The module contains a large number of functional enhancements compared to
 the standard account_asset module from Odoo.
 
+Installation
+============
+
+This module depends on :
+* account
+
+The module in NOT compatible with the standard account_asset module.
+
+This modules are parts of the OCA/account-financial-tools suite.
+
 Configuration
 =============
 
 It is recommended to configure your Purchase Journal with "Group Invoice Lines" to avoid the
 creation of separate assets per Supplier Invoice Line.
 
-Known issues
-============
+Usage
+=====
 
-The module in NOT compatible with the standard account_asset module.
+To use this module, you need to:
 
+ * go to ...
+
+For further information, please visit:
+
+ * https://www.odoo.com/forum/help-1
+ 
+
+Known issues / Roadmap
+======================
+
+ * The module in NOT compatible with the standard account_asset module.
+ 
 Bug Tracker
 ===========
 
-Bugs are tracked on `GitHub Issues <https://github.com/OCA/{project_repo}/issues>`_.
+Bugs are tracked on `GitHub Issues <https://github.com/OCA/account-financial-tools/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us smashing it by providing a detailed and welcomed feedback
-`here <https://github.com/OCA/{project_repo}/issues/new?body=module:%20{module_name}%0Aversion:%20{version}%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`here <https://github.com/OCA/account-financial-tools/issues/new?body=module:%20account_auto_fy_sequence%0Aversion:%208.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Credits
 =======
 
 Contributors
 ------------
-- OpenERP SA
-- Luc De Meyer (Noviat)
-- Frédéric Clementi (camptocamp)
-- Florian Dacosta (Akretion)
-- Stéphane Bidoul (Acsone)
+
+* Luc De Meyer (Noviat)
+* Frédéric Clementi (camptocamp)
+* Florian Dacosta (Akretion)
+* Romain Deheele
+* Leonardo Pistone
+* Stéphane Bidoul <stephane.bidoul@acsone.eu>
+* Sandy Carter
+* Alexandre Fayolle
+* Stefan Rijnhart
 
 Maintainer
 ----------
 
-.. image:: https://odoo-community.org/logo.png
+.. image:: http://odoo-community.org/logo.png
    :alt: Odoo Community Association
-   :target: https://odoo-community.org
+   :target: http://odoo-community.org
 
 This module is maintained by the OCA.
 
-OCA, or the Odoo Community Association, is a nonprofit organization whose
-mission is to support the collaborative development of Odoo features and
-promote its widespread use.
+OCA, or the Odoo Community Association, is a nonprofit organization whose mission is to support the collaborative development of Odoo features and promote its widespread use.
 
 To contribute to this module, please visit http://odoo-community.org.
