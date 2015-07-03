@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="relation_account_careof" model="res.partner.relation.type">
+            <field name="name">Care Of</field>
+            <field name="name_inverse">is Care Of</field>
+        </record>
+    </data>
+</openerp>
