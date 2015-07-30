@@ -270,7 +270,8 @@ class account_asset_remove(orm.TransientModel):
                     'asset_id': asset.id
                 }
                 move_lines.append((0, 0, move_line_vals))
-
+        for line in move_lines:
+            line[2]['analytic_account_id'] = asset.account_analytic_id.id
         return move_lines
 
     def remove(self, cr, uid, ids, context=None):
