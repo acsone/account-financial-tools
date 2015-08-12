@@ -35,7 +35,6 @@
         'portal_sale',
     ],
     'data': [
-        'views/account_invoice_view.xml',
         'data/account_invoice_email_data.xml',
     ],
     'auto_install': True,
