@@ -68,7 +68,9 @@ class account_asset_category(orm.Model):
         'name': fields.char('Name', size=64, required=True, select=1),
         'note': fields.text('Note'),
         'account_analytic_id': fields.many2one(
-            'account.analytic.account', 'Analytic account'),
+            'account.analytic.account', 'Analytic account',
+            domain=[('type', '!=', 'view'),
+                    ('state', 'not in', ('close', 'cancelled'))]),
         'account_asset_id': fields.many2one(
             'account.account', 'Asset Account', required=True,
             domain=[('type', '=', 'other')]),
@@ -1104,6 +1106,10 @@ class account_asset_asset(orm.Model):
             type='many2one',
             relation='res.currency',
             store=True, readonly=True,),
+        'account_analytic_id': fields.many2one(
+            'account.analytic.account', 'Analytic account',
+            domain=[('type', '!=', 'view'),
+                    ('state', 'not in', ('close', 'cancelled'))]),
     }
 
     _defaults = {
