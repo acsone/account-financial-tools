@@ -18,6 +18,8 @@ It provides addons to:
 And much more.
 
 [//]: # (modules)
+Addons
+-------
 module | version | name | summary
 --- | --- | --- | ---
 account_credit_control | 0.2.0 | Account Credit Control | 
@@ -52,10 +54,15 @@ account_auto_fy_sequence | 0.1 | Automatic Fiscal Year Sequences |
 account_invoice_currency | 1.0 | Company currency in invoices | 
 account_asset_management_xls | 0.1 | Assets Management Excel reporting | 
 account_tax_update | 1.0.44 | Update tax wizard | 
-account_cancel_invoice_check_payment_order | unported | Cancel invoice, check on payment order | 
-account_move_line_search_extension | unported | Journal Items Search Extension | 
-async_move_line_importer | unported | Asynchronous move/move line CSV importer | 
-account_cancel_invoice_check_voucher | unported | Cancel invoice, check on bank statement | 
+
+Unported addons
+---------------
+module | version | name | summary
+--- | --- | --- | ---
+account_cancel_invoice_check_payment_order | 1.0 | Cancel invoice, check on payment order | 
+account_move_line_search_extension | 0.1 | Journal Items Search Extension | 
+async_move_line_importer | 0.1.2 | Asynchronous move/move line CSV importer | 
+account_cancel_invoice_check_voucher | 1.0 | Cancel invoice, check on bank statement | 
 [//]: # (end modules)
 
 Translation Status
