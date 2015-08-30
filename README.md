@@ -53,16 +53,16 @@ addon | version | summary
 [account_auto_fy_sequence](account_auto_fy_sequence/) | 0.1 | Automatic Fiscal Year Sequences
 [account_invoice_currency](account_invoice_currency/) | 1.0 | Company currency in invoices
 [account_asset_management_xls](account_asset_management_xls/) | 0.1 | Assets Management Excel reporting
-[account_tax_update](account_tax_update/) | 1.0.44 | Update tax wizard
 
 Unported addons
 ---------------
 addon | version | summary
 --- | --- | ---
-[account_cancel_invoice_check_payment_order](account_cancel_invoice_check_payment_order/) | 1.0 (unported) | Cancel invoice, check on payment order
-[account_move_line_search_extension](account_move_line_search_extension/) | 0.1 (unported) | Journal Items Search Extension
-[async_move_line_importer](async_move_line_importer/) | 0.1.2 (unported) | Asynchronous move/move line CSV importer
-[account_cancel_invoice_check_voucher](account_cancel_invoice_check_voucher/) | 1.0 (unported) | Cancel invoice, check on bank statement
+[account_tax_update](__unported__/account_tax_update/) | 1.0.44 (unported) | Update tax wizard
+[account_cancel_invoice_check_payment_order](__unported__/account_cancel_invoice_check_payment_order/) | 1.0 (unported) | Cancel invoice, check on payment order
+[account_move_line_search_extension](__unported__/account_move_line_search_extension/) | 0.1 (unported) | Journal Items Search Extension
+[async_move_line_importer](__unported__/async_move_line_importer/) | 0.1.2 (unported) | Asynchronous move/move line CSV importer
+[account_cancel_invoice_check_voucher](__unported__/account_cancel_invoice_check_voucher/) | 1.0 (unported) | Cancel invoice, check on bank statement
 [//]: # (end addons)
 
 Translation Status
