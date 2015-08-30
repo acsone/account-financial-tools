@@ -19,6 +19,7 @@ And much more.
 
 [//]: # (modules)
 module | version | name | summary
+--- | --- | --- | ---
 account_credit_control | 0.2.0 | Account Credit Control | 
 account_reset_chart | 1.0 | Reset a chart of accounts | Delete the accounting setup from an otherwise reusable database
 account_journal_period_close | 1.0 | Account Journal Period Close | 
