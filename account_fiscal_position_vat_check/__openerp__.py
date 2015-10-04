@@ -23,7 +23,7 @@
 
 {
     'name': 'Account Fiscal Position VAT Check',
-    'version': '0.1',
+    'version': '8.0.0.1.0',
     'category': 'Accounting & Finance',
     'license': 'AGPL-3',
     'summary': 'Check VAT on invoice validation',
