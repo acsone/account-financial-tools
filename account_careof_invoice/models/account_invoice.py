@@ -31,7 +31,7 @@ class AccountInvoice(models.Model):
     def _compute_account_careof_partner_id(self):
         if self.type not in ['out_invoice', 'out_refund']:
             self.account_careof_partner_id = False
-        else:
+        elif self.partner_id.id:
             self.account_careof_partner_id = self.partner_id\
                 .get_account_careof_partner(self.date_invoice)
 
