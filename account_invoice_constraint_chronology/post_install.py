@@ -10,9 +10,4 @@ from openerp import SUPERUSER_ID
 
 
 def update_chronology_sale_journals(cr, pool):
-    ajo = pool['account.journal']
-    journal_ids = ajo.search(
-        cr, SUPERUSER_ID, [('type', 'in', ('sale', 'sale_refund'))])
-    if journal_ids:
-        ajo.write(cr, SUPERUSER_ID, journal_ids, {'check_chronology': True})
     return
