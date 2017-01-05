@@ -27,34 +27,18 @@
 #
 #
 
-{
-    "name": "Account Invoice Constraint Chronology",
-    "version": "8.0.1.0.0",
-    "author": "ACSONE SA/NV,Odoo Community Association (OCA)",
-    "maintainer": "ACSONE SA/NV",
-    "website": "http://www.acsone.eu",
-    "license": "AGPL-3",
-    "images": [],
-    "category": "Accounting",
-    "depends": ["account"],
-    "description": """
-Account Invoice Constraint Chronology
-=====================================
+from openerp import models, fields, api
 
-This module helps ensuring the chronology of invoice numbers.
 
-It prevents the validation of invoices when:
-* there are draft invoices with an anterior date
-* there are validated invoices with a posterior date
+class account_journal(models.Model):
+    _inherit = ['account.journal']
 
-The check can be activated on a per-journal basis
-(for sale and purchase journals).
-""",
-    "data": ["view/account_view.xml"],
-    "demo": [],
-    "test": [],
-    "licence": "AGPL-3",
-    "installable": True,
-    "auto_install": False,
-    "application": True,
-}
+    check_chronology = fields.Boolean(string='Check Chronology', default=False)
+
+    @api.one
+    @api.onchange('type')
+    def on_change_type(self):
+        if self.type not in ['sale', 'purchase', 'sale_refund',
+                                     'purchase_refund']:
+            self.check_chronology = False
+        return True
