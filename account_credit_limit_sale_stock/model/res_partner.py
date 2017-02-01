@@ -63,12 +63,12 @@ class res_partner(orm.Model):
             for stock_move in stock_move_model.browse(cr, uid, stock_move_ids,
                                                       context=context):
                 sale_order_line = stock_move.procurement_id.sale_line_id
+                price_unit = sale_order_line.price_unit
+                quantity = stock_move.product_qty
                 tax_ids = sale_order_line.tax_id
-                tax = 1.0
-                for tax_id in tax_ids:
-                    tax = tax + tax_id.amount
-                credit = credit + (sale_order_line.price_unit *
-                                   stock_move.product_qty) * tax
+                taxes = self.pool.get('account.tax').compute_all(
+                    cr, uid, tax_ids, price_unit, quantity)
+                credit = credit + taxes['total_included']
             res[partner.id] = partner.credit_limit_level2 + credit
         return res
 
@@ -106,12 +106,12 @@ class res_partner(orm.Model):
                         stock_move_ids,
                         context=context):
                 sale_order_line = stock_move.procurement_id.sale_line_id
+                price_unit = sale_order_line.price_unit
+                quantity = stock_move.product_qty
                 tax_ids = sale_order_line.tax_id
-                tax = 1.0
-                for tax_id in tax_ids:
-                    tax = tax + tax_id.amount
-                somme = somme + (sale_order_line.price_unit *
-                                 stock_move.product_qty) * tax
+                taxes = self.pool.get('account.tax').compute_all(
+                    cr, uid, tax_ids, price_unit, quantity)
+                somme = somme + taxes['total_included']
             res[partner.id] = partner.credit_limit_level2 + somme
         return res
 
