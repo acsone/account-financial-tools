@@ -5,6 +5,7 @@
 from odoo import models, api, fields, _
 from odoo.exceptions import UserError
 
+
 class account_invoice(models.Model):
     _inherit = "account.invoice"
 
@@ -28,11 +29,10 @@ class account_invoice(models.Model):
                         from_string(inv.date_invoice)
                     date_invoice_tz = fields\
                         .Date.context_today(self, date_invoice_format)
-                    raise UserError(_("Chronology Error."
-                                    " Please confirm older draft"
-                                    " invoices before %s and"
-                                    " try again.") %
-                                  date_invoice_tz)
+                    raise UserError(_("Chronology Error. "
+                                      "Please confirm older draft "
+                                      "invoices before %s and try again.")
+                                    % date_invoice_tz)
                 if not inv.already_validated:
                     invoices = self.search([('state', 'in', ['open', 'paid']),
                                             ('date_invoice', '>',
@@ -46,11 +46,10 @@ class account_invoice(models.Model):
                             from_string(inv.date_invoice)
                         date_invoice_tz = fields\
                             .Date.context_today(self, date_invoice_format)
-                        raise UserError(_("Chronology Error. There"
-                                        " exist at least one"
-                                        " invoice with a date"
-                                        " posterior to %s.") %
-                                      date_invoice_tz)
+                        raise UserError(_("Chronology Error. "
+                                          "There exist at least one invoice "
+                                          "with a date posterior to %s.") %
+                                        date_invoice_tz)
             if not inv.already_validated:
                 inv.already_validated = True
         return res
