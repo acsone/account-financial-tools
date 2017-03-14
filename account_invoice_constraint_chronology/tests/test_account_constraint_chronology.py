@@ -85,7 +85,7 @@ class TestAccountConstraintChronology(common.TransactionCase):
         invoice_2 = create_simple_invoice(self, journal.id, date)
         self.assertTrue((invoice_2.state == 'draft'),
                         "Initial invoice state is not Draft")
-        with self.assertRaises(exceptions.Warning):
+        with self.assertRaises(UserError):
             invoice_2.action_invoice_open()
 
     def test_invoice_without_date(self):
@@ -97,5 +97,5 @@ class TestAccountConstraintChronology(common.TransactionCase):
         invoice_2 = create_simple_invoice(self, journal.id, False)
         self.assertTrue((invoice_2.state == 'draft'),
                         "Initial invoice state is not Draft")
-        with self.assertRaises(exceptions.Warning):
+        with self.assertRaises(UserError):
             invoice_2.action_invoice_open()
