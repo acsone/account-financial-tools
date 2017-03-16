@@ -19,7 +19,7 @@
 #
 ##############################################################################
 import logging
-from openerp import models, fields, api, _
+from odoo import models, fields, api, _
 logger = logging.getLogger(__name__)
 
 
@@ -52,10 +52,9 @@ class credit_control_policy_changer(models.TransientModel):
         context = self.env.context
         active_ids = context.get('active_ids')
         invoice_obj = self.env['account.invoice']
-        move_line_obj = self.env['account.move.line']
         if not active_ids:
             return False
-        selected_lines = move_line_obj.browse()
+        selected_lines = self.env['account.move.line']
         for invoice in invoice_obj.browse(active_ids):
             if invoice.type in ('in_invoice', 'in_refund', 'out_refund'):
                 raise api.Warning(_('Please use wizard on customer invoices'))
@@ -63,7 +62,7 @@ class credit_control_policy_changer(models.TransientModel):
             domain = [('account_id', '=', invoice.account_id.id),
                       ('move_id', '=', invoice.move_id.id),
                       ('reconcile_id', '=', False)]
-            move_lines = move_line_obj.search(domain)
+            move_lines = selected_lines.search(domain)
             selected_lines |= move_lines
         return selected_lines
 

@@ -20,9 +20,9 @@
 ##############################################################################
 import logging
 
-from openerp import models, fields, api, _
+from odoo import models, fields, api, _
 
-logger = logging.getLogger('credit.control.run')
+logger = logging.getLogger(__name__)
 
 
 class CreditControlRun(models.Model):
@@ -99,9 +99,7 @@ class CreditControlRun(models.Model):
     def _generate_credit_lines(self):
         """ Generate credit control lines. """
         self.ensure_one()
-        cr_line_obj = self.env['credit.control.line']
-        move_line_obj = self.env['account.move.line']
-        manually_managed_lines = move_line_obj.browse()
+        manually_managed_lines = self.env['account.move.line']
         self._check_run_date(self.date)
 
         policies = self.policy_ids
@@ -109,7 +107,7 @@ class CreditControlRun(models.Model):
             raise api.Warning(_('Please select a policy'))
 
         report = ''
-        generated = cr_line_obj.browse()
+        generated = self.env['credit.control.line']
         for policy in policies:
             if policy.do_nothing:
                 continue
@@ -117,11 +115,11 @@ class CreditControlRun(models.Model):
             manual_lines = policy._lines_different_policy(lines)
             lines -= manual_lines
             manually_managed_lines |= manual_lines
-            policy_lines_generated = cr_line_obj.browse()
+            policy_lines_generated = self.env['credit.control.line']
             if lines:
                 # policy levels are sorted by level
                 # so iteration is in the correct order
-                create = cr_line_obj.create_or_update_from_mv_lines
+                create = policy_lines_generated.create_or_update_from_mv_lines
                 for level in reversed(policy.level_ids):
                     level_lines = level.get_level_lines(self.date, lines)
                     policy_lines_generated += create(level_lines,

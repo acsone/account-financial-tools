@@ -20,9 +20,9 @@
 ##############################################################################
 import logging
 
-from openerp import models, fields, api, _
+from odoo import models, fields, api, _
 
-logger = logging.getLogger('credit.line.control')
+logger = logging.getLogger(__name__)
 
 
 class CreditControlLine(models.Model):
@@ -40,7 +40,7 @@ class CreditControlLine(models.Model):
 
     date = fields.Date(string='Controlling date',
                        required=True,
-                       select=True)
+                       index=True)
     # maturity date of related move line we do not use
     # a related field in order to
     # allow manual changes
@@ -204,7 +204,7 @@ class CreditControlLine(models.Model):
                                                 controlling_date,
                                                 open_amount)
             line = self.create(vals)
-            new_lines += line
+            new_lines |= line
 
             # when we have lines generated earlier in draft,
             # on the same level, it means that we have left
