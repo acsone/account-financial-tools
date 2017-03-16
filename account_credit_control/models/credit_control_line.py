@@ -21,6 +21,7 @@
 import logging
 
 from odoo import models, fields, api, _
+from odoo.exceptions import Warning
 
 logger = logging.getLogger(__name__)
 
@@ -130,7 +131,7 @@ class CreditControlLine(models.Model):
                                 store=True,
                                 readonly=True)
 
-    level = fields.Integer('credit.control.policy.level',
+    level = fields.Integer('Level',
                            related='policy_level_id.level',
                            store=True,
                            readonly=True)
@@ -149,8 +150,8 @@ class CreditControlLine(models.Model):
         data['date_due'] = move_line.date_maturity
         data['state'] = 'draft'
         data['channel'] = level.channel
-        data['invoice_id'] = (move_line.invoice.id if
-                              move_line.invoice else False)
+        data['invoice_id'] = (move_line.invoice_id.id if
+                              move_line.invoice_id else False)
         data['partner_id'] = move_line.partner_id.id
         data['amount_due'] = (move_line.amount_currency or move_line.debit or
                               move_line.credit)
@@ -194,7 +195,10 @@ class CreditControlLine(models.Model):
 
         new_lines = self.browse()
         for move_line in lines:
-            open_amount = move_line.amount_residual_currency
+            if move_line.currency_id:
+                open_amount = move_line.amount_residual_currency
+            else:
+                open_amount = move_line.amount_residual
             cur_tolerance = tolerance.get(move_line.currency_id.id,
                                           tolerance_base)
             if check_tolerance and open_amount < cur_tolerance:
@@ -222,7 +226,7 @@ class CreditControlLine(models.Model):
     def unlink(self):
         for line in self:
             if line.state != 'draft':
-                raise api.Warning(
+                raise Warning(
                     _('You are not allowed to delete a credit control '
                       'line that is not in draft state.')
                 )
