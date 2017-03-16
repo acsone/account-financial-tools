@@ -19,6 +19,7 @@
 #
 ##############################################################################
 from odoo import models, fields, api, _
+from odoo.exceptions import Warning
 
 
 class CreditControlPolicy(models.Model):
@@ -197,7 +198,7 @@ class CreditControlPolicy(models.Model):
                    if account in x.account_ids or x.do_nothing]
         if self not in allowed:
             allowed_names = u"\n".join(x.name for x in allowed)
-            raise api.Warning(
+            raise Warning(
                 _('You can only use a policy set on '
                   'account %s.\n'
                   'Please choose one of the following '

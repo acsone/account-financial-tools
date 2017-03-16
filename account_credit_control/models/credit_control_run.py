@@ -21,6 +21,7 @@
 import logging
 
 from odoo import models, fields, api, _
+from odoo.exceptions import Warning
 
 logger = logging.getLogger(__name__)
 
@@ -83,14 +84,14 @@ class CreditControlRun(models.Model):
         runs = self.search([('date', '>', controlling_date)],
                            order='date DESC', limit=1)
         if runs:
-            raise api.Warning(_('A run has already been executed more '
+            raise Warning(_('A run has already been executed more '
                                 'recently than %s') % (runs.date))
 
         line_obj = self.env['credit.control.line']
         lines = line_obj.search([('date', '>', controlling_date)],
                                 order='date DESC', limit=1)
         if lines:
-            raise api.Warning(_('A credit control line more '
+            raise Warning(_('A credit control line more '
                                 'recent than %s exists at %s') %
                               (controlling_date, lines.date))
 
@@ -104,14 +105,14 @@ class CreditControlRun(models.Model):
 
         policies = self.policy_ids
         if not policies:
-            raise api.Warning(_('Please select a policy'))
+            raise Warning(_('Please select a policy'))
 
         report = ''
         generated = self.env['credit.control.line']
         for policy in policies:
             if policy.do_nothing:
                 continue
-            lines = policy._get_move_lines_to_process(self.date)
+                lines = policy._get_move_lines_to_process(self.date)
             manual_lines = policy._lines_different_policy(lines)
             lines -= manual_lines
             manually_managed_lines |= manual_lines
@@ -156,7 +157,7 @@ class CreditControlRun(models.Model):
         except Exception:
             # In case of exception openerp will do a rollback
             # for us and free the lock
-            raise api.Warning(_('A credit control run is already running'
+            raise Warning(_('A credit control run is already running'
                                 ' in background, please try later.'))
 
         self._generate_credit_lines()

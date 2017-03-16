@@ -19,7 +19,10 @@
 #
 ##############################################################################
 import logging
+
 from odoo import models, fields, api, _
+from odoo.exceptions import Warning
+
 logger = logging.getLogger(__name__)
 
 
@@ -57,7 +60,7 @@ class credit_control_policy_changer(models.TransientModel):
         selected_lines = self.env['account.move.line']
         for invoice in invoice_obj.browse(active_ids):
             if invoice.type in ('in_invoice', 'in_refund', 'out_refund'):
-                raise api.Warning(_('Please use wizard on customer invoices'))
+                raise Warning(_('Please use wizard on customer invoices'))
 
             domain = [('account_id', '=', invoice.account_id.id),
                       ('move_id', '=', invoice.move_id.id),
