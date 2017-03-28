@@ -151,8 +151,8 @@
 
     <menuitem
             name="Credit Control"
-            parent="account_payment_order.payment_root"
-            id="base_credit_control_menu"/>
+            parent="account.menu_finance_reports"
+            id="base_credit_control_menu" sequence="10"/>
 
     <record model="ir.actions.act_window" id="credit_control_line_action">
         <field name="name">Credit Control Lines</field>
