@@ -187,7 +187,7 @@ class CreditControlPolicy(models.Model):
                    (self.id, tuple(lines.ids)))
         res = cr.fetchall()
         if res:
-            return move_line_obj.browse([row[0] for row in res])
+            return different_lines.browse([row[0] for row in res])
         return different_lines
 
     @api.multi
@@ -245,17 +245,20 @@ class CreditControlPolicyLevel(models.Model):
                         'UNIQUE (policy_id, level)',
                         'Level must be unique per policy')]
 
-    @api.one
+    @api.multi
     @api.constrains('level', 'computation_mode')
     def _check_level_mode(self):
         """ The smallest level of a policy cannot be computed on the
         "previous_date".
         """
-        smallest_level = self.search([('policy_id', '=', self.policy_id.id)],
-                                     order='level asc', limit=1)
-        if smallest_level.computation_mode == 'previous_date':
-            return api.ValidationError(_('The smallest level can not be of '
-                                         'type Previous Reminder'))
+
+        for policy_level in self:
+            smallest_level = \
+                self.search([('policy_id', '=', policy_level.policy_id.id)],
+                            order='level asc', limit=1)
+            if smallest_level.computation_mode == 'previous_date':
+                return api.ValidationError(_('The smallest level can not be of '
+                                             'type Previous Reminder'))
 
     @api.multi
     def _previous_level(self):

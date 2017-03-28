@@ -112,7 +112,7 @@ class CreditControlRun(models.Model):
         for policy in policies:
             if policy.do_nothing:
                 continue
-                lines = policy._get_move_lines_to_process(self.date)
+            lines = policy._get_move_lines_to_process(self.date)
             manual_lines = policy._lines_different_policy(lines)
             lines -= manual_lines
             manually_managed_lines |= manual_lines
