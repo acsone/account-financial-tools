@@ -26,7 +26,7 @@ from odoo.exceptions import Warning
 logger = logging.getLogger(__name__)
 
 
-class credit_control_policy_changer(models.TransientModel):
+class CreditControlPolicyChanger(models.TransientModel):
     """ Wizard that is run from invoices and allows to set manually a policy
     Policy are actually apply to related move lines availabe
     in selection widget
