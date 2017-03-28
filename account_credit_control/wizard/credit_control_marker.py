@@ -77,7 +77,7 @@ class CreditControlMarker(models.TransientModel):
         filtered_lines = self._filter_lines(self.line_ids)
         if not filtered_lines:
             raise Warning(_('No lines will be changed. '
-                                'All the selected lines are already done.'))
+                            'All the selected lines are already done.'))
 
         self._mark_lines(filtered_lines, self.name)
 
