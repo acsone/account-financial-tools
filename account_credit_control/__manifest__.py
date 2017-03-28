@@ -36,24 +36,24 @@
      "report/report_credit_control_summary.xml",
 
      # Data
-      "data/data.xml",
+     "data/data.xml",
 
      # Views
-      "views/account_invoice.xml",
-      "views/credit_control_line.xml",
-      "views/credit_control_policy.xml",
-      "views/credit_control_run.xml",
-      "views/res_company.xml",
-      "views/res_partner.xml",
+     "views/account_invoice.xml",
+     "views/credit_control_line.xml",
+     "views/credit_control_policy.xml",
+     "views/credit_control_run.xml",
+     "views/res_company.xml",
+     "views/res_partner.xml",
 
      # Wizards
-      "wizard/credit_control_emailer_view.xml",
-      "wizard/credit_control_marker_view.xml",
-      "wizard/credit_control_printer_view.xml",
-      "wizard/credit_control_policy_changer_view.xml",
+     "wizard/credit_control_emailer_view.xml",
+     "wizard/credit_control_marker_view.xml",
+     "wizard/credit_control_printer_view.xml",
+     "wizard/credit_control_policy_changer_view.xml",
 
      # Security
-      "security/ir.model.access.csv",
+     "security/ir.model.access.csv",
  ],
  'demo': [
      "demo/credit_control_demo.xml"

@@ -257,8 +257,8 @@ class CreditControlPolicyLevel(models.Model):
                 self.search([('policy_id', '=', policy_level.policy_id.id)],
                             order='level asc', limit=1)
             if smallest_level.computation_mode == 'previous_date':
-                return api.ValidationError(_('The smallest level can not be of '
-                                             'type Previous Reminder'))
+                return api.ValidationError(_('The smallest level can not be '
+                                             'of type Previous Reminder'))
 
     @api.multi
     def _previous_level(self):
