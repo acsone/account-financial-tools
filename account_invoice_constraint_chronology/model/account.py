@@ -13,7 +13,6 @@ class account_journal(models.Model):
     @api.one
     @api.onchange('type')
     def on_change_type(self):
-        if self.type not in ['sale', 'purchase', 'sale_refund',
-                                     'purchase_refund']:
+        if self.type not in ['sale', 'purchase']:
             self.check_chronology = False
         return True

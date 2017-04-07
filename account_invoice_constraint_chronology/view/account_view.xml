@@ -9,7 +9,7 @@
             <field name="inherit_id" ref="account.view_account_journal_form"/>
             <field name="arch" type="xml">
                 <field name="refund_sequence" position="after">
-                    <field name="check_chronology" attrs="{'readonly': [('type', 'not in', ['sale', 'purchase', 'sale_refund', 'purchase_refund'])]}"/>
+                    <field name="check_chronology" attrs="{'readonly': [('type', 'not in', ['sale', 'purchase'])]}"/>
                 </field>
              </field>
         </record>
