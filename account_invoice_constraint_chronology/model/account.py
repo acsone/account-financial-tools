@@ -10,9 +10,9 @@ class AccountJournal(models.Model):
 
     check_chronology = fields.Boolean(string='Check Chronology', default=False)
 
-    @api.one
+    @api.multi
     @api.onchange('type')
     def on_change_type(self):
-        if self.type not in ['sale', 'purchase']:
-            self.check_chronology = False
-        return True
+        for record in self:
+            if record.type not in ['sale', 'purchase']:
+                record.check_chronology = False
