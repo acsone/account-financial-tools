@@ -5,7 +5,7 @@
 from odoo import models, fields, api
 
 
-class account_journal(models.Model):
+class AccountJournal(models.Model):
     _inherit = ['account.journal']
 
     check_chronology = fields.Boolean(string='Check Chronology', default=False)
