@@ -64,7 +64,7 @@ class CreditControlPolicyChanger(models.TransientModel):
 
             domain = [('account_id', '=', invoice.account_id.id),
                       ('move_id', '=', invoice.move_id.id),
-                      ('full_reconcile_id', '=', False)]
+                      ('reconciled', '=', False)]
             move_lines = selected_lines.search(domain)
             selected_lines |= move_lines
         return selected_lines
