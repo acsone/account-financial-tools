@@ -93,7 +93,7 @@ class CreditControlRun(models.Model):
         if lines:
             raise UserError(_('A credit control line more '
                               'recent than %s exists at %s') %
-                          (controlling_date, lines.date))
+                            (controlling_date, lines.date))
 
     @api.multi
     @api.returns('credit.control.line')
