@@ -242,7 +242,7 @@ class CreditControlPolicyLevel(models.Model):
                             order='level asc', limit=1)
             if smallest_level.computation_mode == 'previous_date':
                 raise ValidationError(_('The smallest level can not be '
-                                             'of type Previous Reminder'))
+                                        'of type Previous Reminder'))
 
     @api.multi
     def _previous_level(self):
