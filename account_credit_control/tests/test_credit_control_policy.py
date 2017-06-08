@@ -43,11 +43,6 @@ class TestCreditControlPolicy(TransactionCase):
         result = policy.check_policy_against_account(account)
         self.assertTrue(result)
 
-
-class TestCreditControlPolicyLevel(TransactionCase):
-    post_install = True
-    at_install = False
-
     def test_check_level_mode(self):
         """
         Check the method _check_level_mode on policy level
@@ -79,20 +74,16 @@ class TestCreditControlPolicyLevel(TransactionCase):
         level_2 = self.env.ref('account_credit_control.3_time_2')
 
         level_2.computation_mode = 'net_days'
-        where_clause = " (mv_line.date_maturity + %(delay)s)::date <= " \
-                       "date(%(controlling_date)s)"
+        where_clause = level_2._net_days_get_boundary()
         result = level_2._get_sql_date_boundary_for_computation_mode()
         self.assertEqual(result, where_clause)
 
         level_2.computation_mode = 'end_of_month'
-        where_clause = "(date_trunc('MONTH', (mv_line.date_maturity + " \
-                       "%(delay)s))+INTERVAL '1 MONTH - 1 day')::date" \
-                       "<= date(%(controlling_date)s)"
+        where_clause = level_2._end_of_month_get_boundary()
         result = level_2._get_sql_date_boundary_for_computation_mode()
         self.assertEqual(result, where_clause)
 
         level_2.computation_mode = 'previous_date'
-        where_clause = \
-            "(cr_line.date + %(delay)s)::date <= date(%(controlling_date)s)"
+        where_clause = level_2._previous_date_get_boundary()
         result = level_2._get_sql_date_boundary_for_computation_mode()
         self.assertEqual(result, where_clause)
