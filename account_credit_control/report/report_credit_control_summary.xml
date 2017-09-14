@@ -20,9 +20,7 @@
                     <span t-field="doc.current_policy_level.name"/>
                 </h2>
 
-                <div class="col-xs-12">
-                   <span t-field="doc.current_policy_level.custom_text" />
-                </div>
+                <p class="mt32 mb32" t-field="doc.current_policy_level.custom_text"/>
 
                 <h3>Summary</h3>
 
