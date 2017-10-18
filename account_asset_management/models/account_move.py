@@ -129,12 +129,18 @@ class AccountMoveLine(models.Model):
             asset_obj = self.env['account.asset']
             move = self.env['account.move'].browse(vals['move_id'])
             depreciation_base = vals['debit'] or -vals['credit']
+
+            start_date = move.date
+            invoice = self.env.context.get('invoice')
+            if invoice:
+                start_date = invoice.date_invoice or start_date
+
             temp_asset = asset_obj.new({
                 'name': vals['name'],
                 'profile_id': vals['asset_profile_id'],
                 'purchase_value': depreciation_base,
                 'partner_id': vals['partner_id'],
-                'date_start': move.date,
+                'date_start': start_date,
             })
             temp_asset.onchange_profile_id()
             asset_vals = temp_asset._convert_to_write(temp_asset._cache)
