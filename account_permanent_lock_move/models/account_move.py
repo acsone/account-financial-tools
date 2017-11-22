@@ -31,18 +31,11 @@ class AccountMove(models.Model):
         result._check_lock_date()
         return result
 
-    @api.model
-    def _get_allowed_write_field(self):
-        return []
-
     @api.multi
     def write(self, vals):
         # Add _check_lock_date for write of account.move,
         # as it is not done by default
-        allowed_write_field = self._get_allowed_write_field()
-        if not set(allowed_write_field).issuperset(vals.keys()):
-            self._check_lock_date()
+        self._check_lock_date()
         result = super(AccountMove, self).write(vals)
-        if not set(allowed_write_field).issuperset(vals.keys()):
-            self._check_lock_date()
+        self._check_lock_date()
         return result
