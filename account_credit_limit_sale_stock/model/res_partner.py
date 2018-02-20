@@ -54,7 +54,7 @@ class res_partner(orm.Model):
                          ('procurement_id.sale_line_id.order_id.'
                           'commercial_partner_id',
                           '=', partner.commercial_partner_id.id), '|',
-                         ('procurement_id.sale_line_id.invoice_lines', '=',
+                         ('procurement_id.sale_line_id.has_invoice_lines', '=',
                           False),
                          ('procurement_id.sale_line_id.invoice_lines', 'in',
                           draft_partner_account_invoice_line)]
@@ -94,7 +94,7 @@ class res_partner(orm.Model):
                              ('state', 'not in',
                               ('draft', 'cancel')),
                              ('procurement_id', '<>', False), '|',
-                             ('procurement_id.sale_line_id.invoice_lines',
+                             ('procurement_id.sale_line_id.has_invoice_lines',
                               '=', False),
                              ('procurement_id.sale_line_id.invoice_lines',
                               'in', draft_partner_account_invoice_line)]

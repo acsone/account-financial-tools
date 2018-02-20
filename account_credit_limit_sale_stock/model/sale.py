@@ -29,6 +29,7 @@
 
 from openerp.osv import fields, orm
 from openerp import fields as new_field
+from openerp import api
 from openerp.tools.translate import _
 
 
@@ -37,6 +38,16 @@ class sale_order_line(orm.Model):
 
     invoice_lines = new_field.Many2many(auto_join=True)
     order_id = new_field.Many2one(auto_join=True)
+    has_invoice_lines = new_field.Boolean(
+        compute='_compute_has_invoice_lines',
+        store=True,
+    )
+
+    @api.multi
+    @api.depends('invoice_lines')
+    def _compute_has_invoice_lines(self):
+        for record in self:
+            record.has_invoice_lines = len(record.invoice_lines) > 0
 
 
 class account_invoice_line(orm.Model):
