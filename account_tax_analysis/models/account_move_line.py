@@ -14,18 +14,17 @@ class AccountMoveLine(models.Model):
     @api.multi
     @api.depends("tax_line_id",
                  "tax_ids",
-                 "company_id.partner_id.lang")
+                 "company_id")
     def _compute_analysis_tax(self):
         companies = self.mapped("company_id")
         for company in companies:
+
             lines = self.filtered(lambda s, c=company: s.company_id == c)
             lang_lines = lines
             if company.partner_id.lang:
                 lang_lines = lines.with_context(lang=company.partner_id.lang)
-            for lang_line in lang_lines:
 
-                # computed value must be assign without a with_context()
-                line = lines.filtered(lambda s, o=lang_line: s == o)
+            for line, lang_line in zip(lines, lang_lines):
 
                 line.analysis_tax = (
                     lang_line.tax_line_id.description or

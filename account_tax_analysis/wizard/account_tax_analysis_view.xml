@@ -10,12 +10,12 @@
         <field name="arch" type="xml">
             <form string="Taxes Report">
                 <group>
+                    <field name="date_range_id"/>
                     <label for="start_date" string="Period"/>
                     <div>
                         <field name="start_date" class="oe_inline"/>&#160;-&#160;
                         <field name="end_date" class="oe_inline"/>
                     </div>
-                    <field name="date_range_id"/>
                 </group>
                 <footer>
                     <button name="show_vat" string="Show tax lines" type="object" class="oe_highlight"/>
