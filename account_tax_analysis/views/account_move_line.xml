@@ -58,19 +58,19 @@
         <field name="model">account.move.line</field>
         <field eval="16" name="priority"/>
         <field name="arch" type="xml">
-            <tree editable="top">
+            <tree create="0">
                 <field name="analysis_tax" />
                 <field name="name"/>
                 <field name="ref"/>
                 <field name="date"/>
                 <field name="partner_id" />
-                <field name="account_id" domain="[('journal_id','=',journal_id), ('company_id', '=', company_id)]"/>
+                <field name="account_id" />
                 <field name="debit" sum="Total debit"/>
                 <field name="credit" sum="Total credit"/>
                 <field name="balance" sum="Total Tax"/>
                 <field name="invoice_id"/>
-                <field name="amount_currency"  />
-                <field name="currency_id"  />
+                <field name="amount_currency"/>
+                <field name="currency_id" groups="base.group_multi_currency" />
             </tree>
         </field>
     </record>
