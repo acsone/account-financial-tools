@@ -18,14 +18,11 @@ class AccountMoveLine(models.Model):
     def _compute_analysis_tax(self):
         companies = self.mapped("company_id")
         for company in companies:
-
-            lines = self.filtered(lambda s, c=company: s.company_id == c)
+            lines = self.filtered(lambda s: s.company_id == company)
             lang_lines = lines
             if company.partner_id.lang:
                 lang_lines = lines.with_context(lang=company.partner_id.lang)
-
             for line, lang_line in zip(lines, lang_lines):
-
                 line.analysis_tax = (
                     lang_line.tax_line_id.description or
                     ', '.join(sorted(lang_line.tax_ids.mapped('description'))))
