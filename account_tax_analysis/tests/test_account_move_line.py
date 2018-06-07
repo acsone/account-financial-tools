@@ -13,7 +13,6 @@ class TestAccountMoveLine(TransactionCase):
         acc_tax = self.env["account.tax"]
         self.tax1 = acc_tax.create({
             "name": "tax1",
-            "description": "tax1",
             "amount": 1,
         })
 
@@ -25,20 +24,12 @@ class TestAccountMoveLine(TransactionCase):
     def test_analysis_tax(self):
 
         self.assertEqual(self.move_line_tax_line_id.analysis_tax,
-                         self.move_line_tax_line_id.tax_line_id.description)
+                         self.move_line_tax_line_id.tax_line_id.name)
 
         current_tax = self.move_line_tax_ids.tax_ids
         self.assertEqual(self.move_line_tax_ids.analysis_tax,
-                         current_tax.description)
+                         current_tax.name)
 
         self.move_line_tax_ids.tax_ids += self.tax1
         self.assertEqual(self.move_line_tax_ids.analysis_tax,
-                         "%s, tax1" % current_tax.description)
-
-    def test_void_description(self):
-        # description on tax isn't required
-        self.tax1.description = False
-        current_tax = self.move_line_tax_ids.tax_ids
-        self.move_line_tax_ids.tax_ids += self.tax1
-        self.assertEqual(self.move_line_tax_ids.analysis_tax,
-                         "%s" % current_tax.description)
+                         "%s, tax1" % current_tax.name)

@@ -24,11 +24,6 @@ class AccountMoveLine(models.Model):
                     company.partner_id.lang != self.env.user.partner_id.lang):
                 lang_lines = lines.with_context(lang=company.partner_id.lang)
             for line, lang_line in zip(lines, lang_lines):
-                if lang_line.tax_line_id.description:
-                    line.analysis_tax = lang_line.tax_line_id.description
-                else:
-                    descriptions = lang_line.tax_ids.mapped('description')
-                    if False in descriptions:
-                        # remove all False from the descriptions list
-                        descriptions = filter(lambda c: c, descriptions)
-                    line.analysis_tax = ', '.join(sorted(descriptions))
+                 line.analysis_tax = (
+                         lang_line.tax_line_id.name or
+                         ', '.join(sorted(lang_line.tax_ids.mapped('name'))))
