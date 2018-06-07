@@ -34,3 +34,11 @@ class TestAccountMoveLine(TransactionCase):
         self.move_line_tax_ids.tax_ids += self.tax1
         self.assertEqual(self.move_line_tax_ids.analysis_tax,
                          "%s, tax1" % current_tax.description)
+
+    def test_void_description(self):
+        # description on tax isn't required
+        self.tax1.description = False
+        current_tax = self.move_line_tax_ids.tax_ids
+        self.move_line_tax_ids.tax_ids += self.tax1
+        self.assertEqual(self.move_line_tax_ids.analysis_tax,
+                         "%s" % current_tax.description)
