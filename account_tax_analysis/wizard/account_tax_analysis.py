@@ -15,6 +15,10 @@ class AccountTaxDeclarationAnalysis(models.TransientModel):
     date_range_id = fields.Many2one(
         comodel_name='date.range',
         string='Date Range')
+    target_move = fields.Selection([
+        ('posted', 'All Posted Entries'),
+        ('unposted', 'All Unposted Entries'),
+    ], 'Target Moves', default='posted')
 
     @api.multi
     def show_vat(self):
@@ -24,6 +28,13 @@ class AccountTaxDeclarationAnalysis(models.TransientModel):
         action = self.env.ref('account_tax_analysis.action_view_tax_analysis')
         action_fields = action.read()[0]
         action_fields['domain'] = domain
+
+        context = {'search_default_group_by_tax_type': 1}
+        if self.target_move == 'posted':
+            context['search_default_posted'] = 1
+        elif self.target_move == 'unposted':
+            context['search_default_unposted'] = 1
+        action_fields['context'] = context
         return action_fields
 
     @api.onchange('date_range_id')

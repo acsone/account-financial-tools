@@ -24,12 +24,18 @@ class TestAccountMoveLine(TransactionCase):
     def test_analysis_tax(self):
 
         self.assertEqual(self.move_line_tax_line_id.analysis_tax,
-                         self.move_line_tax_line_id.tax_line_id.name)
+                         self.move_line_tax_line_id.tax_line_id.analysis_name)
 
         current_tax = self.move_line_tax_ids.tax_ids
         self.assertEqual(self.move_line_tax_ids.analysis_tax,
-                         current_tax.name)
+                         current_tax.analysis_name)
 
         self.move_line_tax_ids.tax_ids += self.tax1
         self.assertEqual(self.move_line_tax_ids.analysis_tax,
-                         "%s, tax1" % current_tax.name)
+                         "%s, tax1" % current_tax.analysis_name)
+
+    def test_analysis_name(self):
+        self.assertEqual(self.tax1.analysis_name, "tax1")
+
+        self.tax1.description = "tax1_d"
+        self.assertEqual(self.tax1.analysis_name, "tax1 - tax1_d")
