@@ -24,7 +24,7 @@ class AccountTaxDeclarationAnalysis(models.TransientModel):
 
     @api.model
     def _default_company_id(self):
-        return self.env.user.company_id
+        return self.env["res.company"]._company_default_get()
 
     @api.multi
     def show_vat(self):
