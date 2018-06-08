@@ -5,7 +5,7 @@
 {
     "name": "Tax analysis",
     "version": "10.0.1.0.0",
-    'summary': """
+    "description": """
         Add a report on tax (Invoicing / Reports / Taxes Analysis)""",
     "depends": [
         "base",
@@ -20,5 +20,4 @@
         "views/account_move_line.xml",
     ],
     "installable": True,
-    "active": True,
 }
