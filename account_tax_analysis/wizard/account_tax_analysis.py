@@ -10,23 +10,33 @@ class AccountTaxDeclarationAnalysis(models.TransientModel):
     _name = 'account.vat.declaration.analysis'
     _description = 'Account Vat Declaration'
 
-    start_date = fields.Date(required=True,)
-    end_date = fields.Date(required=True,)
+    start_date = fields.Date(required=True)
+    end_date = fields.Date(required=True)
     date_range_id = fields.Many2one(
-        comodel_name='date.range',
-        string='Date Range')
+        comodel_name='date.range', string='Date Range', ondelete="cascade")
     target_move = fields.Selection([
         ('posted', 'All Posted Entries'),
         ('unposted', 'All Unposted Entries'),
     ], 'Target Moves', default='posted')
+    company_id = fields.Many2one(
+        comodel_name="res.company", string="Company", ondelete="cascade",
+        default=lambda s: s._default_company_id())
+
+    @api.model
+    def _default_company_id(self):
+        return self.env.user.company_id
 
     @api.multi
     def show_vat(self):
         self.ensure_one()
-        domain = [('date', '>=', self.start_date),
-                  ('date', '<=', self.end_date)]
+
         action = self.env.ref('account_tax_analysis.action_view_tax_analysis')
         action_fields = action.read()[0]
+
+        domain = [('date', '>=', self.start_date),
+                  ('date', '<=', self.end_date)]
+        if self.company_id:
+            domain.append(("company_id", "=", self.company_id.id))
         action_fields['domain'] = domain
 
         context = {'search_default_group_by_tax_type': 1}
@@ -35,6 +45,7 @@ class AccountTaxDeclarationAnalysis(models.TransientModel):
         elif self.target_move == 'unposted':
             context['search_default_unposted'] = 1
         action_fields['context'] = context
+
         return action_fields
 
     @api.onchange('date_range_id')

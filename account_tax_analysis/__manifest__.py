@@ -5,6 +5,8 @@
 {
     "name": "Tax analysis",
     "version": "10.0.1.0.0",
+    'summary': """
+        Add a report on tax (Invoicing / Reports / Taxes Analysis)""",
     "depends": [
         "base",
         "account",

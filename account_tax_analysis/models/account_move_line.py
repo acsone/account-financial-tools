@@ -9,14 +9,23 @@ class AccountMoveLine(models.Model):
 
     _inherit = 'account.move.line'
 
-    analysis_tax = fields.Char(compute="_compute_analysis_tax", store=True)
-    account_type = fields.Many2one(related='account_id.user_type_id',
-                                   store=True)
+    analysis_tax = fields.Char(
+        string="Tax", compute="_compute_analysis_tax", store=True)
+    account_type = fields.Many2one(
+        related='account_id.user_type_id', store=True)
 
     @api.multi
-    @api.depends("tax_line_id", "tax_ids")
+    @api.depends("tax_line_id", "tax_ids", "company_id")
     def _compute_analysis_tax(self):
-        for line, in self:
-            line.analysis_tax = (
-                line.tax_line_id.analysis_name or
-                ', '.join(sorted(line.tax_ids.mapped('analysis_name'))))
+        companies = self.mapped("company_id")
+        for company in companies:
+            lines = self.filtered(lambda s: s.company_id == company)
+            lang_lines = lines
+            if (company.partner_id.lang and
+                    company.partner_id.lang != self.env.user.partner_id.lang):
+                lang_lines = lines.with_context(lang=company.partner_id.lang)
+            for line, lang_line in zip(lines, lang_lines):
+                line.analysis_tax = (
+                    lang_line.tax_line_id.analysis_name or
+                    ', '.join(sorted(
+                        lang_line.tax_ids.mapped('analysis_name'))))

@@ -10,7 +10,8 @@
         <field name="arch" type="xml">
             <form string="Taxes Report">
                 <group>
-                    <field name="date_range_id"/>
+                    <field name="company_id"/>
+                    <field name="date_range_id" domain="[('company_id', '=', company_id)]"/>
                     <label for="start_date" string="Period"/>
                     <div>
                         <field name="start_date" class="oe_inline"/>&#160;-&#160;

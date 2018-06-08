@@ -38,4 +38,4 @@ class TestAccountMoveLine(TransactionCase):
         self.assertEqual(self.tax1.analysis_name, "tax1")
 
         self.tax1.description = "tax1_d"
-        self.assertEqual(self.tax1.analysis_name, "tax1 - tax1_d")
+        self.assertEqual(self.tax1.analysis_name, "tax1_d - tax1")
