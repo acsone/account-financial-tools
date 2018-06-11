@@ -74,7 +74,7 @@ msgstr "Créé le"
 #. module: account_tax_analysis
 #: model:ir.model.fields,field_description:account_tax_analysis.field_account_vat_declaration_analysis_date_range_id
 msgid "Date Range"
-msgstr "Plage horaire"
+msgstr "Plage de date"
 
 #. module: account_tax_analysis
 #: model:ir.model.fields,field_description:account_tax_analysis.field_account_vat_declaration_analysis_display_name
