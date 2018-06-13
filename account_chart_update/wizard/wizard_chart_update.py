@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # © 2010 Jordi Esteve, Zikzakmedia S.L. (http://www.zikzakmedia.com)
 # © 2010 Pexego Sistemas Informáticos S.L.(http://www.pexego.es)
 #        Borja López Soilán
@@ -10,7 +9,7 @@
 
 from openerp import models, fields, api, exceptions, _, tools
 from contextlib import closing
-from cStringIO import StringIO
+from io import StringIO
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -275,7 +274,7 @@ class WizardUpdateChartsAccounts(models.TransientModel):
     def find_account_by_templates(self, templates):
         """Find an account that matches the template."""
         return self.env['account.account'].search(
-            [('code', 'in', map(self.padded_code, templates.mapped("code"))),
+            [('code', 'in', list(map(self.padded_code, templates.mapped("code")))),
              ('company_id', '=', self.company_id.id)])
 
     @api.multi
@@ -368,7 +367,7 @@ class WizardUpdateChartsAccounts(models.TransientModel):
         }
         specials = ({"display_name", "__last_update"} |
                     specials.get(template._name, set()))
-        for key, field in template._fields.iteritems():
+        for key, field in template._fields.items():
             if (template._name in to_include and
                     key in to_include[template._name]):
                 continue
@@ -391,7 +390,7 @@ class WizardUpdateChartsAccounts(models.TransientModel):
         """
         result = dict()
         ignore = self.fields_to_ignore(template)
-        for key, field in template._fields.iteritems():
+        for key, field in template._fields.items():
             if key in ignore:
                 continue
             relation = expected = t = None
@@ -447,7 +446,7 @@ class WizardUpdateChartsAccounts(models.TransientModel):
         result = list()
         different_fields = sorted(
             template._fields[f].get_description(self.env)["string"]
-            for f in self.diff_fields(template, real).keys())
+            for f in list(self.diff_fields(template, real).keys()))
         if different_fields:
             result.append(
                 _("Differences in these fields: %s.") %
@@ -588,7 +587,7 @@ class WizardUpdateChartsAccounts(models.TransientModel):
 
             # Update tax
             else:
-                for key, value in self.diff_fields(template, tax).iteritems():
+                for key, value in self.diff_fields(template, tax).items():
                     tax[key] = value
                 _logger.debug(_("Updated tax %s."), template.name)
             wiz_tax.update_tax_id = tax
@@ -632,8 +631,7 @@ class WizardUpdateChartsAccounts(models.TransientModel):
                 # Update the account
                 try:
                     with self.env.cr.savepoint():
-                        for key, value in (self.diff_fields(template, account)
-                                           .iteritems()):
+                        for key, value in (iter(self.diff_fields(template, account).items())):
                             account[key] = value
                             _logger.debug(_("Updated account %s."), account)
                 except exceptions.except_orm:
@@ -701,7 +699,7 @@ class WizardUpdateChartsAccounts(models.TransientModel):
                     self._prepare_fp_vals(template))
             else:
                 # Update the given fiscal position
-                for key, value in self.diff_fields(template, fp).iteritems():
+                for key, value in self.diff_fields(template, fp).items():
                     fp[key] = value
             wiz_fp.update_fiscal_position_id = fp
             _logger.debug(
