@@ -7,7 +7,7 @@
 # © 2016 Jacques-Etienne Baudoux <je@bcim.be>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import models, fields, api, exceptions, _, tools
+from odoo import models, fields, api, exceptions, _, tools
 from contextlib import closing
 from io import StringIO
 import logging
@@ -274,7 +274,8 @@ class WizardUpdateChartsAccounts(models.TransientModel):
     def find_account_by_templates(self, templates):
         """Find an account that matches the template."""
         return self.env['account.account'].search(
-            [('code', 'in', list(map(self.padded_code, templates.mapped("code")))),
+            [('code', 'in', list(map(self.padded_code,
+                                     templates.mapped("code")))),
              ('company_id', '=', self.company_id.id)])
 
     @api.multi
@@ -631,7 +632,8 @@ class WizardUpdateChartsAccounts(models.TransientModel):
                 # Update the account
                 try:
                     with self.env.cr.savepoint():
-                        for key, value in (iter(self.diff_fields(template, account).items())):
+                        for key, value in (iter(self.diff_fields(
+                                template, account).items())):
                             account[key] = value
                             _logger.debug(_("Updated account %s."), account)
                 except exceptions.except_orm:
