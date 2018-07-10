@@ -29,6 +29,20 @@ class CreditControlPolicy(models.Model):
              " for the selected accounts",
     )
     active = fields.Boolean('Active', default=True)
+    default_on_partner = fields.Boolean(
+        string="Default Value On Partner"
+    )
+
+    @api.constrains('default_on_partner')
+    @api.multi
+    def _constrains_default_on_partner(self):
+        count = self.search_count([
+            ('default_on_partner', '=', True)
+        ])
+        if count > 1:
+            raise ValidationError(
+                _('You can set only one default on partner!')
+            )
 
     @api.multi
     def _move_lines_domain(self, controlling_date):
@@ -216,7 +230,8 @@ class CreditControlPolicyLevel(models.Model):
                                         string='Email Template',
                                         required=True)
     channel = fields.Selection([('letter', 'Letter'),
-                                ('email', 'Email')],
+                                ('email', 'Email'),
+                                ('phone', 'Phone')],
                                string='Channel',
                                required=True)
     custom_text = fields.Text(string='Custom Message',
