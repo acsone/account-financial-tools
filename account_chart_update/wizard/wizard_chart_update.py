@@ -398,6 +398,9 @@ class WizardUpdateChartsAccounts(models.TransientModel):
             # Code must be padded to check equality
             if key == "code":
                 expected = self.padded_code(template.code)
+            elif key == "tag_ids":
+                expected = template.tag_ids
+
             # Translate template records to reals for comparison
             else:
                 relation = field.get_description(self.env).get("relation", "")
