@@ -358,6 +358,7 @@ class WizardUpdateChartsAccounts(models.TransientModel):
             "account.tax.template": {
                 "account_id",
                 "refund_account_id",
+                "active",
             }
         }
         to_include = {
