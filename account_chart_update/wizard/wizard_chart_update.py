@@ -6,11 +6,12 @@
 # © 2015 Antonio Espinosa <antonioea@tecnativa.com>
 # © 2016 Jairo Llopis <jairo.llopis@tecnativa.com>
 # © 2016 Jacques-Etienne Baudoux <je@bcim.be>
+# © 2018 Stéphane Bidoul, ACSONE SA <stephane.bidoul@acsone.eu>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import models, fields, api, exceptions, _, tools
+from odoo import models, fields, api, exceptions, _, tools
 from contextlib import closing
-from cStringIO import StringIO
+from io import StringIO
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -245,23 +246,15 @@ class WizardUpdateChartsAccounts(models.TransientModel):
         Tax = self.env['account.tax'].with_context(active_test=False)
         result = Tax
         for template in templates:
-            single = Tax
-            criteria = (
-                ("name", "=", template.name),
-                ("description", "=", template.name),
-                ("name", "=", template.description),
-                ("description", "=", template.description),
+            result |= Tax.search(
+                [
+                   ("name", "=", template.name),
+                   ("description", "=", template.description),
+                   ("company_id", "=", self.company_id.id),
+                   ("type_tax_use", "=", template.type_tax_use),
+                ],
+                limit=1,
             )
-            for domain in criteria:
-                if single:
-                    break
-                if domain[2]:
-                    single = Tax.search(
-                        [domain,
-                         ("company_id", "=", self.company_id.id),
-                         ("type_tax_use", "=", template.type_tax_use)],
-                        limit=1)
-            result |= single
         return result
 
     @api.model
@@ -275,7 +268,8 @@ class WizardUpdateChartsAccounts(models.TransientModel):
     def find_account_by_templates(self, templates):
         """Find an account that matches the template."""
         return self.env['account.account'].search(
-            [('code', 'in', map(self.padded_code, templates.mapped("code"))),
+            [('code', 'in', list(map(self.padded_code,
+                                     templates.mapped("code")))),
              ('company_id', '=', self.company_id.id)])
 
     @api.multi
@@ -294,6 +288,8 @@ class WizardUpdateChartsAccounts(models.TransientModel):
             pos = self.find_fp_by_templates(tpl.position_id)
             src = self.find_account_by_templates(tpl.account_src_id)
             dest = self.find_account_by_templates(tpl.account_dest_id)
+            if not src or not dest:
+                continue
             mappings = self.env["account.fiscal.position.account"].search([
                 ("position_id", "=", pos.id),
                 ("account_src_id", "=", src.id),
@@ -320,7 +316,12 @@ class WizardUpdateChartsAccounts(models.TransientModel):
         for tpl in templates:
             pos = self.find_fp_by_templates(tpl.position_id)
             src = self.find_tax_by_templates(tpl.tax_src_id)
+            if not src:
+                _logger.info("missing source tax %s", tpl.tax_src_id.name)
+                continue
             dest = self.find_tax_by_templates(tpl.tax_dest_id)
+            if not dest:
+                continue
             mappings = self.env["account.fiscal.position.tax"].search([
                 ("position_id", "=", pos.id),
                 ("tax_src_id", "=", src.id),
@@ -368,7 +369,7 @@ class WizardUpdateChartsAccounts(models.TransientModel):
         }
         specials = ({"display_name", "__last_update"} |
                     specials.get(template._name, set()))
-        for key, field in template._fields.iteritems():
+        for key, field in template._fields.items():
             if (template._name in to_include and
                     key in to_include[template._name]):
                 continue
@@ -391,7 +392,7 @@ class WizardUpdateChartsAccounts(models.TransientModel):
         """
         result = dict()
         ignore = self.fields_to_ignore(template)
-        for key, field in template._fields.iteritems():
+        for key, field in template._fields.items():
             if key in ignore:
                 continue
             relation = expected = t = None
@@ -447,7 +448,7 @@ class WizardUpdateChartsAccounts(models.TransientModel):
         result = list()
         different_fields = sorted(
             template._fields[f].get_description(self.env)["string"]
-            for f in self.diff_fields(template, real).keys())
+            for f in list(self.diff_fields(template, real).keys()))
         if different_fields:
             result.append(
                 _("Differences in these fields: %s.") %
@@ -465,7 +466,7 @@ class WizardUpdateChartsAccounts(models.TransientModel):
         self.tax_ids.unlink()
 
         # Search for changes between template and real tax
-        for template in self.chart_template_ids.mapped("tax_template_ids"):
+        for template in self.chart_template_ids.with_context(active_test=False).mapped("tax_template_ids"):
             # Check if the template matches a real tax
             tax = self.find_tax_by_templates(template)
 
@@ -588,7 +589,7 @@ class WizardUpdateChartsAccounts(models.TransientModel):
 
             # Update tax
             else:
-                for key, value in self.diff_fields(template, tax).iteritems():
+                for key, value in self.diff_fields(template, tax).items():
                     tax[key] = value
                 _logger.debug(_("Updated tax %s."), template.name)
             wiz_tax.update_tax_id = tax
@@ -632,8 +633,8 @@ class WizardUpdateChartsAccounts(models.TransientModel):
                 # Update the account
                 try:
                     with self.env.cr.savepoint():
-                        for key, value in (self.diff_fields(template, account)
-                                           .iteritems()):
+                        for key, value in (iter(self.diff_fields(
+                                template, account).items())):
                             account[key] = value
                             _logger.debug(_("Updated account %s."), account)
                 except exceptions.except_orm:
@@ -664,23 +665,31 @@ class WizardUpdateChartsAccounts(models.TransientModel):
         tax_mapping = []
         for fp_tax in fp_template.tax_ids:
             # Create the fp tax mapping
+            src = self.find_tax_by_templates(fp_tax.tax_src_id)
+            if not src:
+                _logger.info("source tax not found for %s", fp_tax.tax_src_id.name)
+                continue
+            dest = self.find_tax_by_templates(fp_tax.tax_dest_id)
+            if not dest:
+                continue
             tax_mapping.append({
-                'tax_src_id': self.find_tax_by_templates(
-                    fp_tax.tax_src_id).id,
-                'tax_dest_id': self.find_tax_by_templates(
-                    fp_tax.tax_dest_id).id,
+                'tax_src_id': src.id,
+                'tax_dest_id': dest.id,
             })
         # Account mappings
         account_mapping = []
         for fp_account in fp_template.account_ids:
             # Create the fp account mapping
+            src = self.find_account_by_templates(fp_account.account_src_id)
+            if not src:
+                _logger.info("source account not found for %s", fp_account.account_src_id.code)
+                continue
+            dest = self.find_account_by_templates(fp_account.account_dest_id)
+            if not dest:
+                continue
             account_mapping.append({
-                'account_src_id': (
-                    self.find_account_by_templates(
-                        fp_account.account_src_id).id),
-                'account_dest_id': (
-                    self.find_account_by_templates(
-                        fp_account.account_dest_id).id),
+                'account_src_id': src.id,
+                'account_dest_id': dest.id
             })
         return {
             'company_id': self.company_id.id,
@@ -701,7 +710,7 @@ class WizardUpdateChartsAccounts(models.TransientModel):
                     self._prepare_fp_vals(template))
             else:
                 # Update the given fiscal position
-                for key, value in self.diff_fields(template, fp).iteritems():
+                for key, value in self.diff_fields(template, fp).items():
                     fp[key] = value
             wiz_fp.update_fiscal_position_id = fp
             _logger.debug(
