@@ -365,6 +365,9 @@ class WizardUpdateChartsAccounts(models.TransientModel):
                 'tax_ids',
                 'account_ids',
             ],
+            "account.tax.template": [
+                'children_tax_ids',
+            ],
         }
         specials = ({"display_name", "__last_update"} |
                     specials.get(template._name, set()))
