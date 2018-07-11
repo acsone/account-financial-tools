@@ -5,6 +5,7 @@
 # © 2015 Antonio Espinosa <antonioea@tecnativa.com>
 # © 2016 Jairo Llopis <jairo.llopis@tecnativa.com>
 # © 2016 Jacques-Etienne Baudoux <je@bcim.be>
+# © 2018 Stéphane Bidoul, ACSONE SA <stephane.bidoul@acsone.eu>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import models, fields, api, exceptions, _, tools
@@ -244,23 +245,15 @@ class WizardUpdateChartsAccounts(models.TransientModel):
         Tax = self.env['account.tax'].with_context(active_test=False)
         result = Tax
         for template in templates:
-            single = Tax
-            criteria = (
-                ("name", "=", template.name),
-                ("description", "=", template.name),
-                ("name", "=", template.description),
-                ("description", "=", template.description),
+            result |= Tax.search(
+                [
+                   ("name", "=", template.name),
+                   ("description", "=", template.description),
+                   ("company_id", "=", self.company_id.id),
+                   ("type_tax_use", "=", template.type_tax_use),
+                ],
+                limit=1,
             )
-            for domain in criteria:
-                if single:
-                    break
-                if domain[2]:
-                    single = Tax.search(
-                        [domain,
-                         ("company_id", "=", self.company_id.id),
-                         ("type_tax_use", "=", template.type_tax_use)],
-                        limit=1)
-            result |= single
         return result
 
     @api.model
@@ -294,6 +287,8 @@ class WizardUpdateChartsAccounts(models.TransientModel):
             pos = self.find_fp_by_templates(tpl.position_id)
             src = self.find_account_by_templates(tpl.account_src_id)
             dest = self.find_account_by_templates(tpl.account_dest_id)
+            if not src or not dest:
+                continue
             mappings = self.env["account.fiscal.position.account"].search([
                 ("position_id", "=", pos.id),
                 ("account_src_id", "=", src.id),
@@ -320,7 +315,12 @@ class WizardUpdateChartsAccounts(models.TransientModel):
         for tpl in templates:
             pos = self.find_fp_by_templates(tpl.position_id)
             src = self.find_tax_by_templates(tpl.tax_src_id)
+            if not src:
+                _logger.info("missing source tax %s", tpl.tax_src_id.name)
+                continue
             dest = self.find_tax_by_templates(tpl.tax_dest_id)
+            if not dest:
+                continue
             mappings = self.env["account.fiscal.position.tax"].search([
                 ("position_id", "=", pos.id),
                 ("tax_src_id", "=", src.id),
@@ -465,7 +465,7 @@ class WizardUpdateChartsAccounts(models.TransientModel):
         self.tax_ids.unlink()
 
         # Search for changes between template and real tax
-        for template in self.chart_template_ids.mapped("tax_template_ids"):
+        for template in self.chart_template_ids.with_context(active_test=False).mapped("tax_template_ids"):
             # Check if the template matches a real tax
             tax = self.find_tax_by_templates(template)
 
@@ -664,23 +664,31 @@ class WizardUpdateChartsAccounts(models.TransientModel):
         tax_mapping = []
         for fp_tax in fp_template.tax_ids:
             # Create the fp tax mapping
+            src = self.find_tax_by_templates(fp_tax.tax_src_id)
+            if not src:
+                _logger.info("source tax not found for %s", fp_tax.tax_src_id.name)
+                continue
+            dest = self.find_tax_by_templates(fp_tax.tax_dest_id)
+            if not dest:
+                continue
             tax_mapping.append({
-                'tax_src_id': self.find_tax_by_templates(
-                    fp_tax.tax_src_id).id,
-                'tax_dest_id': self.find_tax_by_templates(
-                    fp_tax.tax_dest_id).id,
+                'tax_src_id': src.id,
+                'tax_dest_id': dest.id,
             })
         # Account mappings
         account_mapping = []
         for fp_account in fp_template.account_ids:
             # Create the fp account mapping
+            src = self.find_account_by_templates(fp_account.account_src_id)
+            if not src:
+                _logger.info("source account not found for %s", fp_account.account_src_id.code)
+                continue
+            dest = self.find_account_by_templates(fp_account.account_dest_id)
+            if not dest:
+                continue
             account_mapping.append({
-                'account_src_id': (
-                    self.find_account_by_templates(
-                        fp_account.account_src_id).id),
-                'account_dest_id': (
-                    self.find_account_by_templates(
-                        fp_account.account_dest_id).id),
+                'account_src_id': src.id,
+                'account_dest_id': dest.id
             })
         return {
             'company_id': self.company_id.id,
