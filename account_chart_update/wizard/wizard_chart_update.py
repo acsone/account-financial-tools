@@ -246,15 +246,15 @@ class WizardUpdateChartsAccounts(models.TransientModel):
         Tax = self.env['account.tax'].with_context(active_test=False)
         result = Tax
         for template in templates:
-            result |= Tax.search(
-                [
-                   ("name", "=", template.name),
-                   ("description", "=", template.description),
-                   ("company_id", "=", self.company_id.id),
-                   ("type_tax_use", "=", template.type_tax_use),
-                ],
-                limit=1,
-            )
+            template_xmlid = template._get_external_ids()[template.id][0]
+            module, xid = template_xmlid.split('.')
+            tax_xmlid = module + '.' + str(self.company_id.id) + '_' + xid
+            try:
+                tax = self.env.ref(tax_xmlid)
+            except ValueError:
+                pass
+            else:
+                result |= tax
         return result
 
     @api.model
@@ -360,6 +360,10 @@ class WizardUpdateChartsAccounts(models.TransientModel):
                 "account_id",
                 "refund_account_id",
                 "active",
+                # do not update tax name and description
+                # we match on xmlid
+                "name",
+                "description",
             }
         }
         to_include = {
