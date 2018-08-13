@@ -30,6 +30,88 @@ class AccountInvoice(models.Model):
         readonly=True,
         copy=False,
     )
+    credit_control_notes = fields.Char(
+        compute='_compute_credit_control_notes',
+        inverse='_inverse_credit_control_notes',
+        readonly=True,
+        states={'open': [('readonly', False)]}
+    )
+    credit_control_date = fields.Date(
+        compute='_compute_credit_control_date',
+        inverse='_inverse_credit_control_date',
+        string='Credit Control Ignore Before',
+        readonly=True,
+        states={'open': [('readonly', False)]}
+    )
+
+    @api.multi
+    def _inverse_credit_control_notes(self):
+        """
+        Set credit control notes on every move line if invoice notes
+        have been modified
+        :return:
+        """
+        invoices = self.filtered('move_id')
+        # Search all moves once
+        moves = invoices._get_all_related_move_line()
+        for invoice in invoices:
+            invoice_moves = moves.filtered(
+                lambda m: m.invoice_id == invoice.id)
+
+            for invoice_move in invoice_moves:
+                invoice_move.credit_control_notes =\
+                    invoice.credit_control_notes
+                break
+
+    @api.multi
+    def _compute_credit_control_notes(self):
+        invoices = self.filtered('move_id')
+        # Search all moves once
+        moves = invoices._get_all_related_move_line()
+        for invoice in invoices:
+            invoice_moves = moves.filtered(
+                lambda m: m.invoice_id.id == invoice.id).with_context(
+                from_parent_object=True)
+            for invoice_move in invoice_moves:
+                invoice.credit_control_notes =\
+                    invoice_move.credit_control_notes
+                break
+
+    @api.model
+    def _get_all_related_move_line(self):
+        # Search for the payable or receivable account move line
+        # (1 for each invoice)
+        return self.env['account.move.line'].search([
+            ('account_id.internal_type', 'in', ['payable', 'receivable']),
+            ('invoice_id', 'in', self.ids)
+        ])
+
+    @api.multi
+    def _inverse_credit_control_date(self):
+        invoices = self.filtered('move_id')
+        moves = invoices._get_all_related_move_line()
+        for invoice in invoices:
+            invoice_moves = moves.filtered(
+                lambda m: m.invoice_id.id == invoice.id).with_context(
+                from_parent_object=True)
+            for invoice_move in invoice_moves:
+                invoice_move.credit_control_date = invoice.credit_control_date
+                break
+
+    @api.multi
+    @api.depends('move_id.line_ids.credit_control_date',
+                 'move_id.line_ids.invoice_id')
+    def _compute_credit_control_date(self):
+        invoices = self.filtered('move_id')
+        for invoice in invoices:
+            move_line = self._get_all_related_move_line()
+            assert len(move_line) == 1
+            invoice_moves = move_line.filtered(
+                lambda m: m.invoice_id.id == invoice.id)
+            for move in invoice_moves:
+                invoice.credit_control_date = move.credit_control_date
+                # TODO: better implementation
+                break
 
     @api.multi
     def action_cancel(self):
