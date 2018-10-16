@@ -1,9 +1,9 @@
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Odoo, Open Source Management Solution
 #
-#    Copyright (c) 2014-2015 Noviat nv/sa (www.noviat.com).
+#    Copyright (c) 2009-2016 Noviat nv/sa (www.noviat.com).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,27 +19,26 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{
-    'name': 'Assets Management',
-    'version': '9.0.2.6.0',
-    'depends': ['account', 'account_fiscal_year'],
-    'conflicts': ['account_asset'],
-    'author': "OpenERP & Noviat,Odoo Community Association (OCA)",
-    'website': 'http://www.noviat.com',
-    'category': 'Accounting & Finance',
-    'sequence': 32,
-    'data': [
-        'security/account_asset_security.xml',
-        'security/ir.model.access.csv',
-        'views/account_asset_view.xml',
-        'views/account_account.xml',
-        'views/account_invoice.xml',
-        'report/account_asset_report_view.xml',
-        'views/res_config_view.xml',
-        'wizard/wizard_asset_compute_view.xml',
-        'wizard/account_asset_remove_view.xml',
-    ],
-    'auto_install': False,
-    'installable': True,
-    'application': True,
-}
+
+from openerp import api, fields, models, _
+from openerp.exceptions import ValidationError
+
+
+class AccountAccount(models.Model):
+    _inherit = 'account.account'
+
+    asset_profile_id = fields.Many2one(
+        'account.asset.profile',
+        name='Asset Profile',
+        help="Default Asset Profile when creating invoice lines "
+             "with this account.")
+
+    @api.multi
+    @api.constrains('asset_profile_id')
+    def _check_asset_profile(self):
+        for account in self:
+            if account.asset_profile_id and \
+                    account.asset_profile_id.account_asset_id != account:
+                raise ValidationError(_(
+                    "The Asset Account defined in the Asset Profile "
+                    "must be equal to the account."))
