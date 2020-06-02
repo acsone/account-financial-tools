@@ -8,15 +8,19 @@
             <form>
                 <group>
                     <field name="journal_id"/>
+                    <field name="account_id" invisible="1"/>
+                    <field name="partner_id" invisible="1"/>
                     <field name="move_ref"/>
                     <field name="move_narration"/>
                     <field name="amount_to_allocate"/>
-                    <field name="amount_allocated"/>
+                    <field name="amount_unallocated"/>
+                    <field name="move_line_ids" invisible="1"/>
                 </group>
                 <notebook>
                     <page string="Clearance Plan Board">
                         <field name="clearance_plan_line_ids">
                             <tree editable="bottom">
+                                <field name="name"/>
                                 <field name="date_maturity"/>
                                 <field name="amount"/>
                             </tree>
