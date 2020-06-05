@@ -88,8 +88,8 @@ class AccountClearancePlanLine(models.TransientModel):
 class AccountClearancePlan(models.TransientModel):
     _inherit = "account.clearance.plan"
 
-    def _get_move_line_vals(self, move, line, negative_amount_residual):
-        res = super()._get_move_line_vals(move, line, negative_amount_residual)
+    def _get_move_line_vals(self, move, line):
+        res = super()._get_move_line_vals(move, line)
         res.update(
             {
                 "payment_mode_id": line.payment_mode_id.id,
