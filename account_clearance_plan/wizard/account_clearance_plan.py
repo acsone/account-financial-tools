@@ -70,12 +70,16 @@ class AccountClearancePlan(models.TransientModel):
 
     @api.multi
     def _prepare_clearance_plan_recurrence_line(self, amount, date):
-        return {
-            "name": self.env.user.company_id.clearance_plan_move_line_name,
-            "clearance_plan_id": self.id,
-            "amount": amount,
-            "date_maturity": date,
-        }
+        model_line = self.env["account.clearance.plan.line"]
+        default_values = model_line.default_get(list(model_line.fields_get()))
+        default_values.update(
+            {
+                "amount": amount,
+                "clearance_plan_id": self.id,
+                "date_maturity": date,
+            }
+        )
+        return default_values
 
     @api.onchange(
         "recurrent_clearance_amount",
