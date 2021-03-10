@@ -46,9 +46,9 @@ class AccountInvoice(models.Model):
         return domain
 
     @api.multi
-    def action_move_create(self):
+    def action_invoice_open(self):
         previously_validated = self.filtered(lambda inv: inv.move_name)
-        res = super(AccountInvoice, self).action_move_create()
+        res = super(AccountInvoice, self).action_invoice_open()
         for inv in self:
             if not inv.journal_id.check_chronology:
                 continue
