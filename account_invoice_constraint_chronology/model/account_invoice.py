@@ -14,46 +14,49 @@ class AccountInvoice(models.Model):
     @api.model
     def _prepare_previous_invoices_domain(self, invoice):
         domain = [
-            ('state', 'not in', ['open',
-                                 'paid',
-                                 'cancel',
-                                 'in_payment',
-                                 'proforma',
-                                 'proforma2']),
-            ('date_invoice', '!=', False),
-            ('date_invoice', '<', invoice.date_invoice),
-            ('journal_id', '=', invoice.journal_id.id),
+            (
+                "state",
+                "not in",
+                ["open", "paid", "cancel", "in_payment", "proforma", "proforma2"],
+            ),
+            ("date_invoice", "!=", False),
+            ("date_invoice", "<", invoice.date_invoice),
+            ("journal_id", "=", invoice.journal_id.id),
         ]
         if (
             invoice.journal_id.refund_sequence
             and invoice.journal_id.sequence_id != invoice.journal_id.refund_sequence_id
         ):
-            domain.append(('type', '=', invoice.type))
+            domain.append(("type", "=", invoice.type))
         return domain
 
     @api.model
     def _prepare_later_invoices_domain(self, invoice):
         domain = [
-            ('state', 'in', ['open', 'in_payment', 'paid']),
-            ('date_invoice', '>', invoice.date_invoice),
-            ('journal_id', '=', invoice.journal_id.id),
+            ("state", "in", ["open", "in_payment", "paid"]),
+            ("date_invoice", ">", invoice.date_invoice),
+            ("journal_id", "=", invoice.journal_id.id),
         ]
         if (
             invoice.journal_id.refund_sequence
             and invoice.journal_id.sequence_id != invoice.journal_id.refund_sequence_id
         ):
-            domain.append(('type', '=', invoice.type))
+            domain.append(("type", "=", invoice.type))
         return domain
 
     @api.multi
+    def _previously_validated(self):
+        self.ensure_one()
+        return bool(self.move_name)
+
+    @api.multi
     def action_move_create(self):
-        previously_validated = self.filtered(lambda inv: inv.move_name)
+        previously_validated = self.filtered(lambda inv: inv._previously_validated())
         res = super(AccountInvoice, self).action_move_create()
         for inv in self:
             if not inv.journal_id.check_chronology:
                 continue
-            invoices = self.search(
-                self._prepare_previous_invoices_domain(inv), limit=1)
+            invoices = self.search(self._prepare_previous_invoices_domain(inv), limit=1)
             if invoices:
                 date_invoice_format = datetime.datetime(
                     year=inv.date_invoice.year,
@@ -61,15 +64,18 @@ class AccountInvoice(models.Model):
                     day=inv.date_invoice.day,
                 )
                 date_invoice_tz = format_date(
-                    self.env, fields.Date.context_today(
-                        self, date_invoice_format))
-                raise UserError(_(
-                    "Chronology Error. Please confirm older draft invoices "
-                    "before {date_invoice} and try again.").format(
-                    date_invoice=date_invoice_tz))
+                    self.env, fields.Date.context_today(self, date_invoice_format)
+                )
+                raise UserError(
+                    _(
+                        "Chronology Error. Please confirm older draft invoices "
+                        "before {date_invoice} and try again."
+                    ).format(date_invoice=date_invoice_tz)
+                )
             if inv not in previously_validated:
                 invoices = self.search(
-                    self._prepare_later_invoices_domain(inv), limit=1)
+                    self._prepare_later_invoices_domain(inv), limit=1
+                )
                 if invoices:
                     date_invoice_format = datetime.datetime(
                         year=inv.date_invoice.year,
@@ -77,10 +83,12 @@ class AccountInvoice(models.Model):
                         day=inv.date_invoice.day,
                     )
                     date_invoice_tz = format_date(
-                        self.env, fields.Date.context_today(
-                            self, date_invoice_format))
-                    raise UserError(_(
-                        "Chronology Error. There exist at least one invoice "
-                        "with a later date to {date_invoice}.").format(
-                        date_invoice=date_invoice_tz))
+                        self.env, fields.Date.context_today(self, date_invoice_format)
+                    )
+                    raise UserError(
+                        _(
+                            "Chronology Error. There exist at least one invoice "
+                            "with a later date to {date_invoice}."
+                        ).format(date_invoice=date_invoice_tz)
+                    )
         return res
