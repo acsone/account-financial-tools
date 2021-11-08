@@ -19,8 +19,8 @@
     ],
     "data": [
         "security/ir.model.access.csv",
+        "data/date_range_type.xml",
         "security/account_fiscal_year_rule.xml",
         "views/account_fiscal_year_views.xml",
-        "data/date_range_type.xml",
     ],
 }
