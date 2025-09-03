@@ -163,7 +163,7 @@ class AccountLoan(models.Model):
     currency_id = fields.Many2one(
         "res.currency",
         compute="_compute_currency",
-        readonly=True,
+        readonly=False,
     )
     journal_type = fields.Char(compute="_compute_journal_type")
     journal_id = fields.Many2one(
