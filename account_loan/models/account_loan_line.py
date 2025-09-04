@@ -283,10 +283,19 @@ class AccountLoanLine(models.Model):
                 "account_id": (account and account.id)
                 or partner.property_account_payable_id.id,
                 "partner_id": partner.id,
-                "credit": self.payment_amount,
                 "debit": 0,
+                "currency_id": self.loan_id.currency_id.id,
+                "credit": self.loan_id.journal_id.currency_id._convert(
+                    from_amount=self.payment_amount,
+                    to_currency=self.loan_id.company_id.currency_id,
+                    company=self.loan_id.company_id,
+                    date=self.date,
+                    round=False,
+                ),
+                "amount_currency": -self.payment_amount,
             }
         )
+
         return vals
 
     def _add_interests_values(self, vals):
@@ -295,7 +304,15 @@ class AccountLoanLine(models.Model):
             {
                 "account_id": self.loan_id.interest_expenses_account_id.id,
                 "credit": 0,
-                "debit": self.interests_amount,
+                "currency_id": self.loan_id.currency_id.id,
+                "debit": self.loan_id.journal_id.currency_id._convert(
+                    from_amount=self.interests_amount,
+                    to_currency=self.loan_id.company_id.currency_id,
+                    company=self.loan_id.company_id,
+                    date=self.date,
+                    round=False,
+                ),
+                "amount_currency": self.interests_amount,
             }
         )
         return vals
@@ -306,7 +323,15 @@ class AccountLoanLine(models.Model):
             {
                 "account_id": self.loan_id.short_term_loan_account_id.id,
                 "credit": 0,
-                "debit": self.payment_amount - self.interests_amount,
+                "currency_id": self.loan_id.currency_id.id,
+                "debit": self.loan_id.journal_id.currency_id._convert(
+                    from_amount=self.payment_amount - self.interests_amount,
+                    to_currency=self.loan_id.company_id.currency_id,
+                    company=self.loan_id.company_id,
+                    date=self.date,
+                    round=False,
+                ),
+                "amount_currency": self.payment_amount - self.interests_amount,
             }
         )
         return vals
@@ -317,15 +342,31 @@ class AccountLoanLine(models.Model):
             vals.append(
                 {
                     "account_id": self.loan_id.short_term_loan_account_id.id,
-                    "credit": self.long_term_principal_amount,
                     "debit": 0,
+                    "currency_id": self.loan_id.currency_id.id,
+                    "credit": self.loan_id.journal_id.currency_id._convert(
+                        from_amount=self.long_term_principal_amount,
+                        to_currency=self.loan_id.company_id.currency_id,
+                        company=self.loan_id.company_id,
+                        date=self.date,
+                        round=False,
+                    ),
+                    "amount_currency": -self.long_term_principal_amount,
                 }
             )
             vals.append(
                 {
-                    "account_id": self.long_term_loan_account_id.id,
+                    "account_id": self.loan_id.short_term_loan_account_id.id,
                     "credit": 0,
-                    "debit": self.long_term_principal_amount,
+                    "currency_id": self.loan_id.currency_id.id,
+                    "debit": self.loan_id.journal_id.currency_id._convert(
+                        from_amount=self.long_term_principal_amount,
+                        to_currency=self.loan_id.company_id.currency_id,
+                        company=self.loan_id.company_id,
+                        date=self.date,
+                        round=False,
+                    ),
+                    "amount_currency": self.long_term_principal_amount,
                 }
             )
         return vals
