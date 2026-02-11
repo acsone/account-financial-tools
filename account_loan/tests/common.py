@@ -1,0 +1,82 @@
+# Copyright 2018 Creu Blanca
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
+
+
+from odoo import Command
+from odoo.exceptions import UserError
+
+from odoo.addons.base.tests.common import BaseCommon
+
+
+class LoanCommon(BaseCommon):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.company = cls.env.ref("base.main_company")
+        cls.company_02 = cls.env["res.company"].create({"name": "Auxiliar company"})
+        cls.journal = cls.env["account.journal"].create(
+            {
+                "company_id": cls.company.id,
+                "type": "purchase",
+                "name": "Debts",
+                "code": "DBT",
+            }
+        )
+        cls.loan_account = cls.create_account(
+            "DEP",
+            "depreciation",
+            "liability_current",
+        )
+        cls.payable_account = cls.create_account("PAY", "payable", "liability_payable")
+        cls.interests_account = cls.create_account("FEE", "Fees", "expense")
+        cls.lt_loan_account = cls.create_account(
+            "LTD",
+            "Long term depreciation",
+            "liability_non_current",
+        )
+        cls.partner = cls.env["res.partner"].create({"name": "Bank"})
+
+    def post(self, loan):
+        self.assertFalse(loan.move_ids)
+        post = (
+            self.env["account.loan.post"]
+            .with_context(default_loan_id=loan.id)
+            .create({})
+        )
+        post.run()
+        self.assertTrue(loan.move_ids)
+        with self.assertRaises(UserError):
+            post.run()
+
+    @classmethod
+    def create_account(cls, code, name, account_type):
+        return cls.env["account.account"].create(
+            {
+                "company_ids": [Command.set([cls.company.id])],
+                "name": name,
+                "code": code,
+                "account_type": account_type,
+                "reconcile": True,
+            }
+        )
+
+    def _prepare_loan_data(self, type_loan, amount, rate, periods):
+        return {
+            "journal_id": self.journal.id,
+            "rate_type": "napr",
+            "loan_type": type_loan,
+            "loan_amount": amount,
+            "payment_on_first_period": True,
+            "rate": rate,
+            "periods": periods,
+            "short_term_loan_account_id": self.loan_account.id,
+            "interest_expenses_account_id": self.interests_account.id,
+            "partner_id": self.partner.id,
+        }
+
+    def create_loan(self, type_loan, amount, rate, periods, compute_lines=True):
+        loan_values = self._prepare_loan_data(type_loan, amount, rate, periods)
+        loan = self.env["account.loan"].create(loan_values)
+        if compute_lines:
+            loan.compute_lines()
+        return loan
