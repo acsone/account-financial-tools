@@ -523,3 +523,10 @@ class TestLoan(LoanCommon):
         self.assertAlmostEqual(
             move_lines[2].debit, move_lines[2].amount_currency / eur_currency.rate, 2
         )
+
+    def test_post_with_residual_amount(self):
+        loan = self.create_loan("fixed-annuity", 30000, 1, 36, compute_lines=False)
+        loan.residual_amount = 600
+        loan.compute_lines()
+        self.post(loan)
+        self.assertEqual(loan.state, "posted")
