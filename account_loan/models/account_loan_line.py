@@ -45,8 +45,8 @@ class AccountLoanLine(models.Model):
         "account.account",
         related="loan_id.interest_expenses_account_id",
     )
-    loan_type = fields.Selection(
-        related="loan_id.loan_type",
+    loan_method = fields.Selection(
+        related="loan_id.loan_method",
     )
     loan_state = fields.Selection(
         related="loan_id.state",
@@ -176,17 +176,17 @@ class AccountLoanLine(models.Model):
                 + self.interests_amount
                 - self.loan_id.residual_amount
             )
-        if self.loan_type == "fixed-principal" and self.loan_id.round_on_end:
+        if self.loan_method == "fixed-principal" and self.loan_id.round_on_end:
             return self.loan_id.fixed_amount + self.interests_amount
-        if self.loan_type == "fixed-principal":
+        if self.loan_method == "fixed-principal":
             return (self.pending_principal_amount - self.loan_id.residual_amount) / (
                 self.loan_id.periods - self.sequence + 1
             ) + self.interests_amount
-        if self.loan_type == "interest":
+        if self.loan_method == "interest":
             return self.interests_amount
-        if self.loan_type == "fixed-annuity" and self.loan_id.round_on_end:
+        if self.loan_method == "fixed-annuity" and self.loan_id.round_on_end:
             return self.loan_id.fixed_amount
-        if self.loan_type == "fixed-annuity":
+        if self.loan_method == "fixed-annuity":
             return self.currency_id.round(
                 -numpy_financial.pmt(
                     self.loan_id._loan_rate() / 100,
@@ -195,9 +195,9 @@ class AccountLoanLine(models.Model):
                     -self.loan_id.residual_amount,
                 )
             )
-        if self.loan_type == "fixed-annuity-begin" and self.loan_id.round_on_end:
+        if self.loan_method == "fixed-annuity-begin" and self.loan_id.round_on_end:
             return self.loan_id.fixed_amount
-        if self.loan_type == "fixed-annuity-begin":
+        if self.loan_method == "fixed-annuity-begin":
             return self.currency_id.round(
                 -numpy_financial.pmt(
                     self.loan_id._loan_rate() / 100,
@@ -219,7 +219,7 @@ class AccountLoanLine(models.Model):
         if (
             self.sequence == self.loan_id.periods
             and self.loan_id.round_on_end
-            and self.loan_type in ["fixed-annuity", "fixed-annuity-begin"]
+            and self.loan_method in ["fixed-annuity", "fixed-annuity-begin"]
         ):
             self.interests_amount = self.currency_id.round(
                 self.loan_id.fixed_amount
@@ -235,7 +235,7 @@ class AccountLoanLine(models.Model):
             self.payment_amount = self._compute_amount()
 
     def _compute_interest(self):
-        if self.loan_type == "fixed-annuity-begin":
+        if self.loan_method == "fixed-annuity-begin":
             return -numpy_financial.ipmt(
                 self.loan_id._loan_rate() / 100,
                 2,

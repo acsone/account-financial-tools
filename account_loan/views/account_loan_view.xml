@@ -114,7 +114,7 @@
                                 readonly="state != 'draft'"
                                 groups="base.group_multi_company"
                             />
-                            <field name="loan_type" readonly="state != 'draft'" />
+                            <field name="loan_method" readonly="state != 'draft'" />
                             <field name="loan_amount" readonly="state != 'draft'" />
                         </group>
                         <group>

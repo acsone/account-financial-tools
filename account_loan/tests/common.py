@@ -64,7 +64,7 @@ class LoanCommon(BaseCommon):
         return {
             "journal_id": self.journal.id,
             "rate_type": "napr",
-            "loan_type": type_loan,
+            "loan_method": type_loan,
             "loan_amount": amount,
             "payment_on_first_period": True,
             "rate": rate,

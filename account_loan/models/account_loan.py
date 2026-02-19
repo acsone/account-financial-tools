@@ -92,7 +92,7 @@ class AccountLoan(models.Model):
         help="Method of computation of the applied rate",
         default="napr",
     )
-    loan_type = fields.Selection(
+    loan_method = fields.Selection(
         [
             ("fixed-annuity", "Fixed Annuity"),
             ("fixed-annuity-begin", "Fixed Annuity Begin"),
@@ -243,7 +243,7 @@ class AccountLoan(models.Model):
         :return:
         """
         for record in self:
-            if record.loan_type == "fixed-annuity":
+            if record.loan_method == "fixed-annuity":
                 record.fixed_amount = -record.currency_id.round(
                     numpy_financial.pmt(
                         record._loan_rate() / 100,
@@ -252,7 +252,7 @@ class AccountLoan(models.Model):
                         -record.residual_amount,
                     )
                 )
-            elif record.loan_type == "fixed-annuity-begin":
+            elif record.loan_method == "fixed-annuity-begin":
                 record.fixed_amount = -record.currency_id.round(
                     numpy_financial.pmt(
                         record._loan_rate() / 100,
@@ -262,7 +262,7 @@ class AccountLoan(models.Model):
                         when="begin",
                     )
                 )
-            elif record.loan_type == "fixed-principal":
+            elif record.loan_method == "fixed-principal":
                 record.fixed_amount = record.currency_id.round(
                     (record.fixed_loan_amount - record.residual_amount)
                     / record.fixed_periods

@@ -51,7 +51,7 @@ class TestLeasing(LoanCommon):
                 "name": "LOAN",
                 "company_id": self.company.id,
                 "journal_id": self.journal.id,
-                "loan_type": "fixed-annuity",
+                "loan_method": "fixed-annuity",
                 "loan_amount": 100,
                 "rate": 1,
                 "periods": 2,

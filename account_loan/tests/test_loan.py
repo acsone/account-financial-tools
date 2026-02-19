@@ -105,12 +105,12 @@ class TestLoan(LoanCommon):
         line_1 = loan.line_ids.filtered(lambda r: r.sequence == 1)
         for line in loan.line_ids:
             self.assertAlmostEqual(line_1.payment_amount, line.payment_amount, 2)
-        loan.loan_type = "fixed-principal"
+        loan.loan_method = "fixed-principal"
         loan.compute_lines()
         line_1 = loan.line_ids.filtered(lambda r: r.sequence == 1)
         line_end = loan.line_ids.filtered(lambda r: r.sequence == 60)
         self.assertNotAlmostEqual(line_1.payment_amount, line_end.payment_amount, 2)
-        loan.loan_type = "interest"
+        loan.loan_method = "interest"
         loan.compute_lines()
         line_1 = loan.line_ids.filtered(lambda r: r.sequence == 1)
         line_end = loan.line_ids.filtered(lambda r: r.sequence == 60)
@@ -445,7 +445,7 @@ class TestLoan(LoanCommon):
         loan = self.create_loan("fixed-annuity-begin", 10000, 1, 12)
         self.assertNotEqual(loan.fixed_amount, 0.0)
         with Form(loan) as loan_form:
-            loan_form.loan_type = "interest"
+            loan_form.loan_method = "interest"
         self.assertEqual(loan.fixed_amount, 0.0)
 
     def test_loan_post_without_computed_lines(self):
