@@ -17,3 +17,25 @@ def migrate(env, version):
             ("account.loan", "account_loan", "loan_type", "loan_method"),
         ],
     )
+    openupgrade.add_columns(
+        env,
+        [
+            (
+                "account.loan",
+                "loan_type",
+                "selection",
+            )
+        ],
+    )
+    openupgrade.logged_query(
+        env.cr,
+        """
+        UPDATE account_loan
+        SET loan_type = CASE
+            WHEN is_leasing IS TRUE THEN 'leasing'
+            WHEN loan_amount >= 0 THEN 'loan'
+            ELSE 'borrow'
+        END
+        """,
+    )
+    openupgrade.drop_columns(env.cr, [("account_loan", "is_leasing")])

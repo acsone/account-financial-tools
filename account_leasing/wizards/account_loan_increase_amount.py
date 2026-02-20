@@ -10,12 +10,12 @@ class AccountLoanIncreaseAmount(models.TransientModel):
 
     @api.model
     def _get_default_account_from_loan(self, loan):
-        if loan.is_leasing:
+        if loan.loan_type == "leasing":
             return loan.leased_asset_account_id.id
         return super()._get_default_account_from_loan(loan)
 
     def _pre_loan_increase_check(self):
-        if self.loan_id.is_leasing:
+        if self.loan_id.loan_type == "leasing":
             if self.loan_id.line_ids.filtered(
                 lambda r: r.date <= self.date and not r.move_ids
             ):

@@ -10,7 +10,7 @@ class AccountLoan(models.TransientModel):
     _description = "Loan pay amount"
 
     def _pre_loan_pay_cheks(self):
-        if self.loan_id.is_leasing:
+        if self.loan_id.loan_type == "leasing":
             if self.loan_id.line_ids.filtered(
                 lambda r: r.date <= self.date and not r.move_ids
             ):

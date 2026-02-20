@@ -21,6 +21,16 @@ except (OSError, ImportError) as err:
     _logger.error(err)
 
 
+@tagged("-post_install", "at_install")
+class TestLoanWithoutAccountLeasing(LoanCommon):
+    def test_change_amount_set_loan_type(self):
+        loan = self.create_loan("fixed-annuity", -4000, 1, 10, compute_lines=False)
+        loan.loan_amount = 3000
+        self.assertEqual(loan.loan_type, "loan")
+        loan.loan_amount = -3000
+        self.assertEqual(loan.loan_type, "borrow")
+
+
 @tagged("post_install", "-at_install")
 class TestLoan(LoanCommon):
     def test_partner_loans(self):
@@ -373,6 +383,7 @@ class TestLoan(LoanCommon):
         amount = 10000
         periods = 10
         loan = self.create_loan("interest", amount, 1, periods)
+        self.assertEqual(loan.loan_type, "loan")
         loan.payment_on_first_period = False
         loan.start_date = fields.Date.today()
         loan.rate_type = "ear"
@@ -402,6 +413,7 @@ class TestLoan(LoanCommon):
     def test_negative_loan(self):
         # Check that negatives amounts don't give an error
         loan = self.create_loan("fixed-annuity", -4000, 1, 10)
+        self.assertEqual(loan.loan_type, "borrow")
         self.post(loan)
         loan.line_ids[0].view_process_values()
 

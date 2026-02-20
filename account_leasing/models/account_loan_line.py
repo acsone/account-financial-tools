@@ -8,8 +8,8 @@ from odoo.fields import Domain
 class AccountLoanLine(models.Model):
     _inherit = "account.loan.line"
 
-    is_leasing = fields.Boolean(
-        related="loan_id.is_leasing",
+    loan_type = fields.Selection(
+        related="loan_id.loan_type",
     )
 
     def _invoice_vals(self):
@@ -107,13 +107,13 @@ class AccountLoanLine(models.Model):
     def view_account_values(self):
         """Shows the invoice if it is a leasing or the move if it is a loan"""
         self.ensure_one()
-        if self.is_leasing:
+        if self.loan_type == "leasing":
             return self.view_account_invoices()
         return super().view_account_values()
 
     def _generate_account_entry(self):
         self.ensure_one()
-        if self.is_leasing:
+        if self.loan_type == "leasing":
             return self._generate_invoice()
         return super()._generate_account_entry()
 

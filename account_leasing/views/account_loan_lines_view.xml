@@ -7,7 +7,7 @@
         <field name="inherit_id" ref="account_loan.account_loan_line_tree" />
         <field name="arch" type="xml">
             <field name="loan_state" position="after">
-                <field name="is_leasing" column_invisible="True" />
+                <field name="loan_type" column_invisible="True" />
             </field>
         </field>
     </record>

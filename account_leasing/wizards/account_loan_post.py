@@ -8,6 +8,6 @@ class AccountLoanPost(models.TransientModel):
 
     @api.model
     def _get_default_account_from_loan(self, loan):
-        if loan.is_leasing:
+        if loan.loan_type == "leasing":
             return loan.leased_asset_account_id.id
         return super()._get_default_account_from_loan(loan)

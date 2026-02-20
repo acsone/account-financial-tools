@@ -7,7 +7,7 @@ from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 
 from odoo import fields
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tests import Form, tagged
 from odoo.tools import mute_logger
 
@@ -40,7 +40,7 @@ class TestLeasing(LoanCommon):
                 "leased_asset_account_id": self.asset_account.id,
                 "product_id": self.product.id,
                 "interests_product_id": self.interests_product.id,
-                "is_leasing": True,
+                "loan_type": "leasing",
             }
         )
         return data
@@ -65,7 +65,7 @@ class TestLeasing(LoanCommon):
         )
         self.assertEqual(loan.journal_type, "general")
         with Form(loan) as loan_form:
-            loan_form.is_leasing = True
+            loan_form.loan_type = "leasing"
             self.assertNotEqual(loan.journal_id, loan_form.journal_id)
         self.assertEqual(loan.journal_type, "purchase")
         loan_form.company_id = self.company_02
@@ -91,7 +91,7 @@ class TestLeasing(LoanCommon):
             -numpy_financial.pmt(1 / 100 / 12, 24, 10000), line.payment_amount, 2
         )
         self.assertEqual(line.long_term_principal_amount, 0)
-        loan.is_leasing = True
+        loan.loan_type = "leasing"
         loan.long_term_loan_account_id = self.lt_loan_account
         loan.compute_lines()
         line = loan.line_ids.filtered(lambda r: r.sequence == 1)
@@ -258,3 +258,9 @@ class TestLeasing(LoanCommon):
             {"date": fields.Date.today(), "loan_type": "leasing"}
         ).run()
         self.assertTrue(line.has_moves)
+
+    def test_prevent_negative_leasing(self):
+        with self.assertRaisesRegex(
+            ValidationError, "Negative leasing is not supported"
+        ):
+            self.create_loan("fixed-principal", -50, 1, 12)

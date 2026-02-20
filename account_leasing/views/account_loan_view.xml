@@ -3,14 +3,18 @@
      Copyright 2016 Antonio Espinosa <antonio.espinosa@tecnativa.com>
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
-    <record id="account_loan_tree" model="ir.ui.view">
+    <record id="account_loan_search" model="ir.ui.view">
         <field name="name">account.loan.list</field>
         <field name="model">account.loan</field>
-        <field name="inherit_id" ref="account_loan.account_loan_tree" />
+        <field name="inherit_id" ref="account_loan.account_loan_search" />
         <field name="arch" type="xml">
-            <field name="company_id" position="after">
-                <field name="is_leasing" />
-            </field>
+            <filter name="borrow" position="after">
+                <filter
+                    string="Leasing"
+                    name="leasing"
+                    domain="[('loan_type','=','leasing')]"
+                />
+            </filter>
         </field>
     </record>
     <record id="account_loan_form" model="ir.ui.view">
@@ -23,16 +27,16 @@
                     name="view_account_invoices"
                     class="oe_stat_button"
                     icon="fa-pencil-square-o"
-                    invisible="state == 'draft' or not is_leasing"
+                    invisible="state == 'draft' or loan_type != 'leasing'"
                     type="object"
                     string="Invoices"
                 />
             </button>
-            <field name="round_on_end" position="before">
-                <field name="is_leasing" readonly="state != 'draft'" />
+            <field name="loan_type" position="attributes">
+                <attribute name="readonly">state != 'draft'</attribute>
             </field>
             <notebook position="inside">
-                <page string="Leasing" id="leasing" invisible="not is_leasing">
+                <page string="Leasing" id="leasing" invisible="loan_type != 'leasing'">
                     <group>
                         <group>
                             <field
@@ -42,14 +46,20 @@
                             />
                             <field
                                 name="leased_asset_account_id"
-                                required="is_leasing"
+                                required="loan_type == 'leasing'"
                                 readonly="state != 'draft'"
                             />
                             <field name="residual_amount" readonly="state != 'draft'" />
                         </group>
                         <group>
-                            <field name="product_id" required="is_leasing" />
-                            <field name="interests_product_id" required="is_leasing" />
+                            <field
+                                name="product_id"
+                                required="loan_type == 'leasing'"
+                            />
+                            <field
+                                name="interests_product_id"
+                                required="loan_type == 'leasing'"
+                            />
                             <field name="post_invoice" />
                         </group>
                     </group>

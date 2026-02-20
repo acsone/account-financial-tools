@@ -43,6 +43,16 @@ class AccountLoan(models.Model):
         required=True,
         default=lambda self: self._default_company(),
     )
+    loan_type = fields.Selection(
+        [
+            ("loan", "loan"),
+            ("borrow", "Borrow"),
+        ],
+        default="loan",
+        compute="_compute_loan_type",
+        store=True,
+        required=True,
+    )
     state = fields.Selection(
         [
             ("draft", "Draft"),
@@ -188,6 +198,11 @@ class AccountLoan(models.Model):
         "unique(name, company_id)",
         message="Loan name must be unique",
     )
+
+    @api.depends("loan_amount")
+    def _compute_loan_type(self):
+        for loan in self:
+            loan.loan_type = "loan" if self.loan_amount >= 0 else "borrow"
 
     @api.onchange("rate")
     def _onchange_rate_warning(self):

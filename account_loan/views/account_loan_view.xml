@@ -10,6 +10,20 @@
             <search>
                 <field name="partner_id" />
                 <field name="company_id" groups="base.group_multi_company" />
+                <separator />
+                <filter string="Loan" name="loan" domain="[('loan_type','=','loan')]" />
+                <filter
+                    string="Borrow"
+                    name="borrow"
+                    domain="[('loan_type','=','borrow')]"
+                />
+                <group>
+                    <filter
+                        string="Type"
+                        name='loan_type'
+                        context="{'group_by':'loan_type'}"
+                    />
+                </group>
             </search>
         </field>
     </record>
@@ -24,6 +38,7 @@
                 <field name="state" />
                 <field name="rate" optional="hide" />
                 <field name="loan_amount" optional="hide" />
+                <field name="loan_type" optional="show" />
                 <field name="pending_principal_amount" optional="hide" sum="Total" />
                 <field name="periods" optional="hide" />
                 <field name="start_date" optional="hide" />
@@ -116,6 +131,7 @@
                             />
                             <field name="loan_method" readonly="state != 'draft'" />
                             <field name="loan_amount" readonly="state != 'draft'" />
+                            <field name="loan_type" />
                         </group>
                         <group>
                             <field name="rate_type" readonly="state != 'draft'" />
