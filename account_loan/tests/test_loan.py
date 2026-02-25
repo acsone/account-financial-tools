@@ -433,7 +433,11 @@ class TestLoan(LoanCommon):
         periods = 10
         loan = self.create_loan("fixed-annuity", amount, 1, periods)
         self.post(loan)
-        with self.assertRaises(UserError):
+        with self.assertRaisesRegex(
+            UserError,
+            "It is only possible to change to draft if the status is "
+            "cancelled or posted and there are no account moves.",
+        ):
             loan.button_draft()
         line = loan.line_ids.filtered(lambda r: r.sequence == 1)
         line.view_process_values()
@@ -447,7 +451,11 @@ class TestLoan(LoanCommon):
         self.assertEqual(pay.amount, line.final_pending_principal_amount)
         pay.run()
         self.assertEqual(loan.state, "cancelled")
-        with self.assertRaises(UserError):
+        with self.assertRaisesRegex(
+            UserError,
+            "It is only possible to change to draft if the status is "
+            "cancelled or posted and there are no account moves.",
+        ):
             loan.button_draft()
         loan.move_ids.button_draft()
         loan.move_ids.unlink()

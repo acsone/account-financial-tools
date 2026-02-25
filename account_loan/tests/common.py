@@ -22,6 +22,9 @@ class LoanCommon(BaseCommon):
                 "code": "DBT",
             }
         )
+        cls.env["account.journal"].search(
+            [("type", "=", "general")]
+        ).restrict_mode_hash_table = False
         cls.loan_account = cls.create_account(
             "DEP",
             "depreciation",
