@@ -46,25 +46,13 @@ class AccountLoan(models.Model):
             )
         return res
 
-    @api.depends("loan_type")
-    def _compute_journal_type(self):
-        for record in self:
-            if record.loan_type == "leasing":
-                record.journal_type = "purchase"
-            else:
-                record.journal_type = "general"
+    def _journal_type_domain(self):
+        if self.loan_type == "leasing":
+            return Domain("type", "=", "purchase")
+        return super()._journal_type_domain()
 
-    @api.onchange("journal_type", "company_id")
+    @api.onchange("loan_type", "company_id")
     def _onchange_loan_type(self):
-        self.journal_id = self.env["account.journal"].search(
-            Domain(
-                [
-                    ("company_id", "=", self.company_id.id),
-                    ("type", "=", self.journal_type),
-                ]
-            ),
-            limit=1,
-        )
         self.residual_amount = 0.0
 
     def view_account_invoices(self):

@@ -71,11 +71,11 @@ class TestLeasing(LoanCommon):
                 "partner_id": self.partner.id,
             }
         )
-        self.assertEqual(loan.journal_type, "general")
+        self.assertNotEqual(loan.journal_id.type, "purchase")
         with Form(loan) as loan_form:
             loan_form.loan_type = "leasing"
             self.assertNotEqual(loan.journal_id, loan_form.journal_id)
-        self.assertEqual(loan.journal_type, "purchase")
+        self.assertEqual(loan.journal_id.type, "purchase")
         loan_form.company_id = self.company_02
         self.assertFalse(loan_form.interest_expenses_account_id)
 
@@ -148,7 +148,7 @@ class TestLeasing(LoanCommon):
         loan = self.create_loan("fixed-principal", amount, 1, periods)
         self.partner.property_account_payable_id = self.payable_account
         loan.post_invoice = False
-        self.assertEqual(loan.journal_type, "purchase")
+        self.assertEqual(loan.journal_id.type, "purchase")
         loan.long_term_loan_account_id = self.lt_loan_account
         loan.rate_type = "real"
         loan.compute_lines()
@@ -249,7 +249,7 @@ class TestLeasing(LoanCommon):
         periods = 24
         loan = self.create_loan("fixed-principal", amount, 1, periods)
         self.partner.property_account_payable_id = self.payable_account
-        self.assertEqual(loan.journal_type, "purchase")
+        self.assertEqual(loan.journal_id.type, "purchase")
         loan.long_term_loan_account_id = self.lt_loan_account
         loan.rate_type = "real"
         loan.compute_lines()

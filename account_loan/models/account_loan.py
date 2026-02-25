@@ -148,10 +148,11 @@ class AccountLoan(models.Model):
     currency_id = fields.Many2one(
         "res.currency", compute="_compute_currency", readonly=False, store=True
     )
-    journal_type = fields.Char(compute="_compute_journal_type")
     journal_id = fields.Many2one(
         "account.journal",
-        domain="[('company_id', '=', company_id),('type', '=', journal_type)]",
+        domain="[('company_id', '=', company_id)]",
+        compute="_compute_journal_id",
+        readonly=False,
         required=True,
         check_company=True,
     )
@@ -213,6 +214,27 @@ class AccountLoan(models.Model):
         for loan in self:
             loan._check_laon_type_constrains()
 
+    @api.constrains("journal_id", "company_id", "loan_type")
+    def _constrains_journal_type_allowed(self):
+        for loan in self:
+            if (
+                self.env["account.journal"].search_count(
+                    Domain("id", "=", loan.journal_id.id) & loan._journal_domain()
+                )
+                == 0
+            ):
+                raise ValidationError(
+                    self.env._(
+                        "The current journal %(journal_name)s type: %(journal_type)s "
+                        "(company %(journal_company_name)s) is not allowed for this "
+                        "type %(loan_type)s",
+                        journal_name=loan.journal_id.name,
+                        journal_type=loan.journal_id.type,
+                        journal_company_name=loan.journal_id.company_id.name,
+                        loan_type=loan.loan_type,
+                    )
+                )
+
     @api.onchange("rate")
     def _onchange_rate_warning(self):
         if self.state != "draft":
@@ -242,6 +264,25 @@ class AccountLoan(models.Model):
                 )
             previous_pending_principal = line.pending_principal_amount
             previous_principal_amount = line.principal_amount
+
+    @api.depends("loan_type", "company_id")
+    def _compute_journal_id(self):
+        for loan in self:
+            loan.journal_id = self.env["account.journal"].search(
+                self._journal_domain(), limit=1
+            )
+
+    def _journal_domain(self):
+        self.ensure_one()
+        return (
+            Domain("company_id", "=", self.company_id.id or self.env.company.id)
+            & self._journal_type_domain()
+        )
+
+    def _journal_type_domain(self):
+        if self.loan_type in ("loan", "borrow"):
+            return Domain("type", "=", "general")
+        return Domain([])
 
     @api.depends("move_ids")
     def _compute_move_count(self):
@@ -321,9 +362,6 @@ class AccountLoan(models.Model):
     def _compute_currency(self):
         for rec in self:
             rec.currency_id = rec.journal_id.currency_id or rec.company_id.currency_id
-
-    def _compute_journal_type(self):
-        self.journal_type = "general"
 
     @api.onchange("company_id")
     def _onchange_company(self):

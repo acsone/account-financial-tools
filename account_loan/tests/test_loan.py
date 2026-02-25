@@ -35,6 +35,15 @@ class TestLoan(LoanCommon):
         ):
             self.create_loan("fixed-annuity", 4000, 1, 10, loan_type="borrow")
 
+    def test_journal_type_constrains(self):
+        loan = self.create_loan("fixed-annuity", 4000, 1, 10, loan_type="loan")
+        with self.assertRaisesRegex(
+            ValidationError,
+            r"The current journal Debts type: purchase \(company My Company\) "
+            r"is not allowed for this type loan",
+        ):
+            loan.journal_id = self.journal
+
     def test_partner_loans(self):
         self.assertFalse(self.partner.lended_loan_count)
         loan = self.create_loan("fixed-annuity", 500000, 1, 60)

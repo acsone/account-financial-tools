@@ -180,7 +180,6 @@
                                         name="short_term_loan_account_id"
                                         readonly="state != 'draft'"
                                     />
-                                    <field name="journal_type" invisible="1" />
                                 </group>
                                 <group>
                                     <field
