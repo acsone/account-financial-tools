@@ -153,6 +153,7 @@ class AccountLoan(models.Model):
         domain="[('company_id', '=', company_id)]",
         compute="_compute_journal_id",
         readonly=False,
+        store=True,
         required=True,
         check_company=True,
     )
@@ -210,12 +211,12 @@ class AccountLoan(models.Model):
             )
 
     @api.constrains("loan_amount", "loan_type")
-    def _loan_type_constrains(self):
+    def _check_loan_type_constrains(self):
         for loan in self:
             loan._check_laon_type_constrains()
 
     @api.constrains("journal_id", "company_id", "loan_type")
-    def _constrains_journal_type_allowed(self):
+    def _check_journal_type_allowed(self):
         for loan in self:
             if (
                 self.env["account.journal"].search_count(

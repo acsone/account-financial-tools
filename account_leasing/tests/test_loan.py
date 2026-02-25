@@ -33,12 +33,6 @@ class TestLeasing(LoanCommon):
             {"name": "Bank fee", "type": "service"}
         )
 
-    def test_constrains_leasing_must_have_postive_amount(self):
-        with self.assertRaisesRegex(
-            ValidationError, "Leasing type must have postive amount or change the type"
-        ):
-            self.create_loan("fixed-annuity", -4000, 1, 10, loan_type="leasing")
-
     def _prepare_loan_data(self, type_loan, amount, rate, period, loan_type="leasing"):
         data = super()._prepare_loan_data(
             type_loan, amount, rate, period, loan_type=loan_type
@@ -48,29 +42,19 @@ class TestLeasing(LoanCommon):
                 "leased_asset_account_id": self.asset_account.id,
                 "product_id": self.product.id,
                 "interests_product_id": self.interests_product.id,
-                "loan_type": "leasing",
+                "loan_type": loan_type,
             }
         )
         return data
 
+    def test_constrains_leasing_must_have_postive_amount(self):
+        with self.assertRaisesRegex(
+            ValidationError, "Leasing type must have postive amount or change the type"
+        ):
+            self.create_loan("fixed-annuity", -4000, 1, 10, loan_type="leasing")
+
     def test_onchange(self):
-        loan = self.env["account.loan"].create(
-            {
-                "name": "LOAN",
-                "company_id": self.company.id,
-                "journal_id": self.journal.id,
-                "loan_method": "fixed-annuity",
-                "loan_amount": 100,
-                "rate": 1,
-                "periods": 2,
-                "leased_asset_account_id": self.asset_account.id,
-                "short_term_loan_account_id": self.loan_account.id,
-                "interest_expenses_account_id": self.interests_account.id,
-                "product_id": self.product.id,
-                "interests_product_id": self.interests_product.id,
-                "partner_id": self.partner.id,
-            }
-        )
+        loan = self.create_loan("fixed-annuity", 500000, 1, 60, loan_type="loan")
         self.assertNotEqual(loan.journal_id.type, "purchase")
         with Form(loan) as loan_form:
             loan_form.loan_type = "leasing"

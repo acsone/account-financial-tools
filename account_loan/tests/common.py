@@ -22,9 +22,10 @@ class LoanCommon(BaseCommon):
                 "code": "DBT",
             }
         )
-        cls.env["account.journal"].search(
-            [("type", "=", "general")]
-        ).restrict_mode_hash_table = False
+        cls.general_journal = cls.env["account.journal"].search(
+            [("company_id", "=", cls.company.id), ("type", "=", "general")], limit=1
+        )
+        cls.general_journal.restrict_mode_hash_table = False
         cls.loan_account = cls.create_account(
             "DEP",
             "depreciation",
@@ -63,9 +64,17 @@ class LoanCommon(BaseCommon):
             }
         )
 
-    def _prepare_loan_data(self, loan_method, amount, rate, periods, loan_type="loan"):
+    def _prepare_loan_data(
+        self, loan_method, amount, rate, periods, loan_type="loan", journal=None
+    ):
+        if not journal:
+            if loan_type in ("loan", "borrow"):
+                journal = self.general_journal
+            else:
+                journal = self.journal
+
         return {
-            "journal_id": self.journal.id,
+            "journal_id": journal.id,
             "rate_type": "napr",
             "loan_type": loan_type,
             "loan_method": loan_method,
