@@ -2,7 +2,6 @@
 
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
-from odoo.tools import float_compare
 
 
 class AccountLoanPost(models.TransientModel):
@@ -133,8 +132,8 @@ class AccountLoanPost(models.TransientModel):
                 + self.loan_id.residual_amount
             )
             if (
-                float_compare(
-                    self.loan_id.loan_amount, total_principal, precision_digits=2
+                self.loan_id.currency_id.compare_amounts(
+                    self.loan_id.loan_amount, total_principal
                 )
                 != 0
             ):
