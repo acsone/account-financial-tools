@@ -8,7 +8,7 @@ from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 
 from odoo import fields
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tests import Form, tagged
 from odoo.tools import mute_logger
 
@@ -21,18 +21,20 @@ except (OSError, ImportError) as err:
     _logger.error(err)
 
 
-@tagged("-post_install", "at_install")
-class TestLoanWithoutAccountLeasing(LoanCommon):
-    def test_change_amount_set_loan_type(self):
-        loan = self.create_loan("fixed-annuity", -4000, 1, 10, compute_lines=False)
-        loan.loan_amount = 3000
-        self.assertEqual(loan.loan_type, "loan")
-        loan.loan_amount = -3000
-        self.assertEqual(loan.loan_type, "borrow")
-
-
 @tagged("post_install", "-at_install")
 class TestLoan(LoanCommon):
+    def test_constrains_loan_must_have_postive_amount(self):
+        with self.assertRaisesRegex(
+            ValidationError, "Loan type must have postive amount or change the type"
+        ):
+            self.create_loan("fixed-annuity", -4000, 1, 10, loan_type="loan")
+
+    def test_constrains_borrow_must_have_negative_amount(self):
+        with self.assertRaisesRegex(
+            ValidationError, "Borrow type must have negative amount or change the type"
+        ):
+            self.create_loan("fixed-annuity", 4000, 1, 10, loan_type="borrow")
+
     def test_partner_loans(self):
         self.assertFalse(self.partner.lended_loan_count)
         loan = self.create_loan("fixed-annuity", 500000, 1, 60)
@@ -412,8 +414,7 @@ class TestLoan(LoanCommon):
 
     def test_negative_loan(self):
         # Check that negatives amounts don't give an error
-        loan = self.create_loan("fixed-annuity", -4000, 1, 10)
-        self.assertEqual(loan.loan_type, "borrow")
+        loan = self.create_loan("fixed-annuity", -4000, 1, 10, loan_type="borrow")
         self.post(loan)
         loan.line_ids[0].view_process_values()
 

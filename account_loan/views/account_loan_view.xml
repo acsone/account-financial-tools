@@ -37,8 +37,8 @@
                 <field name="company_id" groups="base.group_multi_company" />
                 <field name="state" />
                 <field name="rate" optional="hide" />
-                <field name="loan_amount" optional="hide" />
                 <field name="loan_type" optional="show" />
+                <field name="loan_amount" optional="hide" />
                 <field name="pending_principal_amount" optional="hide" sum="Total" />
                 <field name="periods" optional="hide" />
                 <field name="start_date" optional="hide" />
@@ -129,9 +129,9 @@
                                 readonly="state != 'draft'"
                                 groups="base.group_multi_company"
                             />
+                            <field name="loan_type" readonly="state != 'draft'" />
                             <field name="loan_method" readonly="state != 'draft'" />
                             <field name="loan_amount" readonly="state != 'draft'" />
-                            <field name="loan_type" />
                         </group>
                         <group>
                             <field name="rate_type" readonly="state != 'draft'" />

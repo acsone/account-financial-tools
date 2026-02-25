@@ -8,7 +8,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Domain
 
 _logger = logging.getLogger(__name__)
@@ -49,8 +49,6 @@ class AccountLoan(models.Model):
             ("borrow", "Borrow"),
         ],
         default="loan",
-        compute="_compute_loan_type",
-        store=True,
         required=True,
     )
     state = fields.Selection(
@@ -199,10 +197,21 @@ class AccountLoan(models.Model):
         message="Loan name must be unique",
     )
 
-    @api.depends("loan_amount")
-    def _compute_loan_type(self):
+    def _check_laon_type_constrains(self):
+        self.ensure_one()
+        if self.loan_type == "loan" and self.loan_amount < 0:
+            raise ValidationError(
+                self.env._("Loan type must have postive amount or change the type")
+            )
+        if self.loan_type == "borrow" and self.loan_amount > 0:
+            raise ValidationError(
+                self.env._("Borrow type must have negative amount or change the type")
+            )
+
+    @api.constrains("loan_amount", "loan_type")
+    def _loan_type_constrains(self):
         for loan in self:
-            loan.loan_type = "loan" if self.loan_amount >= 0 else "borrow"
+            loan._check_laon_type_constrains()
 
     @api.onchange("rate")
     def _onchange_rate_warning(self):

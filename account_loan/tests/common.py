@@ -60,11 +60,12 @@ class LoanCommon(BaseCommon):
             }
         )
 
-    def _prepare_loan_data(self, type_loan, amount, rate, periods):
+    def _prepare_loan_data(self, loan_method, amount, rate, periods, loan_type="loan"):
         return {
             "journal_id": self.journal.id,
             "rate_type": "napr",
-            "loan_method": type_loan,
+            "loan_type": loan_type,
+            "loan_method": loan_method,
             "loan_amount": amount,
             "payment_on_first_period": True,
             "rate": rate,
@@ -74,8 +75,12 @@ class LoanCommon(BaseCommon):
             "partner_id": self.partner.id,
         }
 
-    def create_loan(self, type_loan, amount, rate, periods, compute_lines=True):
-        loan_values = self._prepare_loan_data(type_loan, amount, rate, periods)
+    def create_loan(
+        self, loan_method, amount, rate, periods, compute_lines=True, **kawargs
+    ):
+        loan_values = self._prepare_loan_data(
+            loan_method, amount, rate, periods, **kawargs
+        )
         loan = self.env["account.loan"].create(loan_values)
         if compute_lines:
             loan.compute_lines()
