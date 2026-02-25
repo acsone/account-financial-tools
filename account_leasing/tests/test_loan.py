@@ -33,8 +33,16 @@ class TestLeasing(LoanCommon):
             {"name": "Bank fee", "type": "service"}
         )
 
-    def _prepare_loan_data(self, type_loan, amount, rate, periods):
-        data = super()._prepare_loan_data(type_loan, amount, rate, periods)
+    def test_constrains_leasing_must_have_postive_amount(self):
+        with self.assertRaisesRegex(
+            ValidationError, "Leasing type must have postive amount or change the type"
+        ):
+            self.create_loan("fixed-annuity", -4000, 1, 10, loan_type="leasing")
+
+    def _prepare_loan_data(self, type_loan, amount, rate, period, loan_type="leasing"):
+        data = super()._prepare_loan_data(
+            type_loan, amount, rate, period, loan_type=loan_type
+        )
         data.update(
             {
                 "leased_asset_account_id": self.asset_account.id,
@@ -258,9 +266,3 @@ class TestLeasing(LoanCommon):
             {"date": fields.Date.today(), "loan_type": "leasing"}
         ).run()
         self.assertTrue(line.has_moves)
-
-    def test_prevent_negative_leasing(self):
-        with self.assertRaisesRegex(
-            ValidationError, "Negative leasing is not supported"
-        ):
-            self.create_loan("fixed-principal", -50, 1, 12)

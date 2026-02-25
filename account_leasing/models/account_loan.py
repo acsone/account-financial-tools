@@ -11,7 +11,6 @@ class AccountLoan(models.Model):
     loan_type = fields.Selection(
         selection_add=[("leasing", "Leasing")],
         ondelete={"leasing": "set default"},
-        readonly=False,
     )
     leased_asset_account_id = fields.Many2one(
         "account.account",
@@ -39,35 +38,13 @@ class AccountLoan(models.Model):
         default=True, help="Invoices will be posted automatically"
     )
 
-    @api.constrains("loan_type", "loan_amount")
-    def _contrains_no_negative_leasing(self):
-        negative_leasing = self.filtered(
-            lambda loan: loan.loan_type == "leasing" and loan.loan_amount < 0
-        )
-        if negative_leasing:
+    def _check_laon_type_constrains(self):
+        res = super()._check_laon_type_constrains()
+        if self.loan_type == "leasing" and self.loan_amount < 0:
             raise ValidationError(
-                self.env._(
-                    "Negative leasing is not supported, loan(s): %s",
-                    negative_leasing.mapped("name"),
-                )
+                self.env._("Leasing type must have postive amount or change the type")
             )
-
-    @api.depends("loan_amount")
-    def _compute_loan_type(self):
-        leasing = self.filtered(lambda loan: loan.loan_type == "leasing")
-        loan = self - leasing
-        res = super(AccountLoan, loan)._compute_loan_type()
-        leasing.loan_type = "leasing"
         return res
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        # as loan_type is now setable by the user, the api.depends
-        # is compute method is triggered only if we are not setting
-        # the value which is always the case with the default value
-        loans = super().create(vals_list)
-        loans._compute_loan_type()
-        return loans
 
     @api.depends("loan_type")
     def _compute_journal_type(self):

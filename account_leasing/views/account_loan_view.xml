@@ -32,9 +32,6 @@
                     string="Invoices"
                 />
             </button>
-            <field name="loan_type" position="attributes">
-                <attribute name="readonly">state != 'draft'</attribute>
-            </field>
             <notebook position="inside">
                 <page string="Leasing" id="leasing" invisible="loan_type != 'leasing'">
                     <group>
