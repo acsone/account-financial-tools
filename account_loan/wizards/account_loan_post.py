@@ -146,4 +146,4 @@ class AccountLoanPost(models.TransientModel):
             raise UserError(self.env._("Only loans in draft state can be posted"))
         self.loan_id.post()
         move = self.env["account.move"].create(self.move_vals())
-        move.action_post()
+        move._post(soft=self.loan_id._soft_post_moves())

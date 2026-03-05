@@ -439,6 +439,10 @@ change occured:</p>
 <ul class="simple">
 <li>remove the <tt class="docutils literal">has_invoices</tt> computed field on <tt class="docutils literal">account.loan.line</tt>
 which was exactly the same has <tt class="docutils literal">has_moves</tt> field</li>
+<li>rename loan_type into loan_method</li>
+<li>add loan_type computed store field to easily filter group by loan /
+borrow / leasing</li>
+<li>add support to mark future moves as auto_post</li>
 </ul>
 </div>
 <div class="section" id="section-2">

@@ -560,3 +560,40 @@ class TestLoan(LoanCommon):
         loan.compute_lines()
         self.post(loan)
         self.assertEqual(loan.state, "posted")
+
+    @freeze_time("2025-01-01")
+    def test_force_posted(self):
+        self.env["ir.config_parameter"].set_param(
+            "account_loan.auto_post_loan_moves_at_date", "false"
+        )
+        loan = self.create_loan("fixed-annuity", 30000, 1, 36, compute_lines=False)
+        loan.start_date = "2025-02-01"
+        self.assertFalse(loan.move_ids)
+        post = (
+            self.env["account.loan.post"]
+            .with_context(default_loan_id=loan.id)
+            .create({})
+        )
+        post.run()
+        self.assertTrue(loan.move_ids)
+        for move in loan.move_ids:
+            self.assertEqual(move.state, "posted")
+
+    @freeze_time("2025-01-01")
+    def test_auto_poste(self):
+        self.env["ir.config_parameter"].set_param(
+            "account_loan.auto_post_loan_moves_at_date", "true"
+        )
+        loan = self.create_loan("fixed-annuity", 30000, 1, 36, compute_lines=False)
+        loan.start_date = "2025-02-01"
+        self.assertFalse(loan.move_ids)
+        post = (
+            self.env["account.loan.post"]
+            .with_context(default_loan_id=loan.id)
+            .create({})
+        )
+        post.run()
+        self.assertTrue(loan.move_ids)
+        for move in loan.move_ids:
+            self.assertEqual(move.state, "draft")
+            self.assertEqual(move.auto_post, "at_date")

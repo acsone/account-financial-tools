@@ -421,12 +421,6 @@ class AccountLoanLine(models.Model):
 
         return vals
 
-    def _auto_post_moves(self):
-        """
-        Inhertiance hook to conditon posting of moves
-        """
-        return True
-
     def _generate_move(self, journal=False, account=False):
         """
         Computes and post the moves of loans
@@ -442,8 +436,7 @@ class AccountLoanLine(models.Model):
                 move = self.env["account.move"].create(
                     record._move_vals(journal=journal, account=account)
                 )
-                if record._auto_post_moves():
-                    move.action_post()
+                move._post(soft=record.loan_id._soft_post_moves())
                 res.append(move.id)
         return res
 
