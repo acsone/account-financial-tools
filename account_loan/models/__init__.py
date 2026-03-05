@@ -4,4 +4,5 @@
 from . import account_loan
 from . import account_loan_line
 from . import account_move
+from . import res_config_settings
 from . import res_partner
