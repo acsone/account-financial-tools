@@ -40,7 +40,6 @@ class AccountLoanPost(models.TransientModel):
 
     def move_line_vals(self):
         res = list()
-        partner = self.loan_id.partner_id.with_company(self.loan_id.company_id)
         line = self.loan_id.line_ids.filtered(lambda r: r.sequence == 1)
         # Amounts are evaled if > 0 for allowing negative loans to be able to be the
         # donors of the loan
@@ -55,7 +54,6 @@ class AccountLoanPost(models.TransientModel):
             {
                 "account_id": self.account_id.id,
                 "name": self.loan_id.name,
-                "partner_id": partner.id,
                 "credit": -loan_currency_amount if loan_currency_amount < 0 else 0,
                 "debit": loan_currency_amount if loan_currency_amount > 0 else 0,
                 "currency_id": self.loan_id.currency_id.id,
@@ -116,7 +114,9 @@ class AccountLoanPost(models.TransientModel):
 
     @api.private
     def move_vals(self):
+        partner = self.loan_id.partner_id.with_company(self.loan_id.company_id)
         return {
+            "partner_id": partner.id,
             "loan_id": self.loan_id.id,
             "date": self.loan_id.start_date,
             "ref": self.loan_id.name,
