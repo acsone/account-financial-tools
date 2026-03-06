@@ -300,6 +300,9 @@ class AccountLoanLine(models.Model):
     def _move_vals(self, journal=False, account=False):
         self.ensure_one()
         return {
+            "partner_id": self.loan_id.partner_id.with_company(
+                self.loan_id.company_id
+            ).id,
             "loan_line_id": self.id,
             "loan_id": self.loan_id.id,
             "date": self.date,
@@ -312,7 +315,9 @@ class AccountLoanLine(models.Model):
 
     def _add_basic_values(self, vals, account):
         self.ensure_one()
-        partner = self.loan_id.partner_id.with_company(self.loan_id.company_id)
+        partner = self.loan_id.partner_id.commercial_partner_id.with_company(
+            self.loan_id.company_id
+        )
         # Amounts are evaled if > 0 for allowing negative loans to be able to be the
         # donors of the loan
         partner_account = (
@@ -330,7 +335,6 @@ class AccountLoanLine(models.Model):
         vals.append(
             {
                 "account_id": (account and account.id) or partner_account.id,
-                "partner_id": partner.id,
                 "credit": loan_currency_amount if loan_currency_amount > 0 else 0,
                 "debit": -loan_currency_amount if loan_currency_amount < 0 else 0,
                 "currency_id": self.loan_id.currency_id.id,
