@@ -597,3 +597,18 @@ class TestLoan(LoanCommon):
         for move in loan.move_ids:
             self.assertEqual(move.state, "draft")
             self.assertEqual(move.auto_post, "at_date")
+
+    def test_loan_post_partner_id(self):
+        """Test that account_loan_post sets partner_id from loan"""
+        contact = self.env["res.partner"].create(
+            {"name": "Test contact", "parent_id": self.partner.id}
+        )
+        loan = self.create_loan(
+            "fixed-annuity", 30000, 1, 36, compute_lines=False, partner=contact
+        )
+        self.post(loan)
+        self.assertTrue(loan.move_ids.line_ids)
+        for move in loan.move_ids:
+            self.assertEqual(move.partner_id, contact)
+            for line in move.line_ids:
+                self.assertEqual(line.partner_id, self.partner)

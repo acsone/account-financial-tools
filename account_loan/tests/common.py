@@ -65,7 +65,14 @@ class LoanCommon(BaseCommon):
         )
 
     def _prepare_loan_data(
-        self, loan_method, amount, rate, periods, loan_type="loan", journal=None
+        self,
+        loan_method,
+        amount,
+        rate,
+        periods,
+        loan_type="loan",
+        journal=None,
+        partner=None,
     ):
         if not journal:
             if loan_type in ("loan", "borrow"):
@@ -84,7 +91,7 @@ class LoanCommon(BaseCommon):
             "periods": periods,
             "short_term_loan_account_id": self.loan_account.id,
             "interest_expenses_account_id": self.interests_account.id,
-            "partner_id": self.partner.id,
+            "partner_id": partner.id if partner else self.partner.id,
         }
 
     def create_loan(
