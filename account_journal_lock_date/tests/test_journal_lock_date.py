@@ -49,9 +49,13 @@ class TestJournalLockDate(common.AccountTestInvoicingCommon):
         cls.journal.period_lock_date = date.today() + timedelta(days=2)
 
     def test_journal_lock_date(self):
-        self.env.user.write({"groups_id": [(3, self.ref("base.group_system"))]})
         self.env.user.write(
-            {"groups_id": [(3, self.ref("account.group_account_manager"))]}
+            {
+                "group_ids": [
+                    Command.unlink(self.env.ref("base.group_system").id),
+                    Command.unlink(self.env.ref("account.group_account_manager").id),
+                ]
+            }
         )
         self.assertFalse(self.env.user.has_group("account.group_account_manager"))
 
@@ -121,7 +125,11 @@ class TestJournalLockDate(common.AccountTestInvoicingCommon):
     def test_journal_lock_date_adviser(self):
         """The journal lock date is ignored for Advisers"""
         self.env.user.write(
-            {"groups_id": [(4, self.env.ref("account.group_account_manager").id)]}
+            {
+                "group_ids": [
+                    Command.link(self.env.ref("account.group_account_manager").id)
+                ]
+            }
         )
         self.assertTrue(self.env.user.has_group("account.group_account_manager"))
         wizard = (

@@ -1,7 +1,9 @@
 # Copyright 2017 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models
+from datetime import date
+
+from odoo import models
 from odoo.exceptions import UserError
 from odoo.tools.misc import format_date
 
@@ -14,9 +16,10 @@ class AccountMove(models.Model):
         if self.env.context.get("bypass_journal_lock_date"):
             return res
 
-        date_min = fields.date.min
+        date_min = date.min
+        is_manager = self.env.user.has_group("account.group_account_manager")
         for move in self:
-            if self.env.user.has_group("account.group_account_manager"):
+            if is_manager:
                 lock_date = move.journal_id.fiscalyear_lock_date or date_min
             else:
                 lock_date = max(
@@ -24,13 +27,13 @@ class AccountMove(models.Model):
                     move.journal_id.fiscalyear_lock_date or date_min,
                 )
             if move.date <= lock_date:
-                lock_date = format_date(self.env, lock_date)
-                if self.env.user.has_group("account.group_account_manager"):
+                formatted_lock_date = format_date(self.env, lock_date)
+                if is_manager:
                     message = self.env._(
                         "You cannot add/modify entries for the journal '%(journal)s' "
                         "prior to and inclusive of the lock date %(journal_date)s",
                         journal=move.journal_id.display_name,
-                        journal_date=lock_date,
+                        journal_date=formatted_lock_date,
                     )
                 else:
                     message = self.env._(
@@ -39,7 +42,7 @@ class AccountMove(models.Model):
                         "Check the Journal settings or ask someone "
                         "with the 'Adviser' role",
                         journal=move.journal_id.display_name,
-                        journal_date=lock_date,
+                        journal_date=formatted_lock_date,
                     )
                 raise UserError(message)
         return res

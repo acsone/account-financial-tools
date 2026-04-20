@@ -1,7 +1,7 @@
 # Copyright 2020 Tecnativa - Ernesto Tejeda
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import SUPERUSER_ID, _, fields, models
+from odoo import SUPERUSER_ID, fields, models
 from odoo.exceptions import UserError
 
 
@@ -16,7 +16,7 @@ class UpdateJournalLockDatesWizard(models.TransientModel):
         self.ensure_one()
         has_adviser_group = self.env.user.has_group("account.group_account_manager")
         if not (has_adviser_group or self.env.uid == SUPERUSER_ID):
-            raise UserError(_("You are not allowed to execute this action."))
+            raise UserError(self.env._("You are not allowed to execute this action."))
 
     def action_update_lock_dates(self):
         self.ensure_one()
