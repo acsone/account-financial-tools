@@ -220,7 +220,7 @@ class AccountLoan(models.Model):
         (It's used like this move._post(soft=loan_id._soft_post_moves())
         """
         return str2bool(
-            self.env["ir.config_parameter"].get_param(
+            self.env["ir.config_parameter"].sudo().get_param(
                 "account_loan.auto_post_loan_moves_at_date", "false"
             )
         )
