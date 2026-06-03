@@ -27,7 +27,7 @@ class TestAssetManagementXls(common.TransactionCase):
         self.wiz_model = self.env['wiz.account.asset.report']
         self.xls_report_name = 'account.asset.xlsx'
         fy = self.env.ref('account_asset_management.date_range_fy')
-        wiz_vals = {'date_range_id': fy.id}
+        wiz_vals = {'date_from': fy.date_start, 'date_to': fy.date_end}
         self.xls_report = self.wiz_model.create(wiz_vals)
         self.report_action = self.xls_report.xls_export()
         self.render_dict = self.report_action['datas']

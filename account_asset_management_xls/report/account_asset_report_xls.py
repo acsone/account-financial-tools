@@ -347,30 +347,23 @@ class AssetReportXlsx(AbstractReportXlsx):
         }
 
     def _get_title(self, wiz, report, format='normal'):
-        period = wiz.date_range_id
-        if format == 'short':
-            prefix = period.name
-        else:
-            if period.type_id.fiscal_year:
-                prefix = _('Fiscal Year') + ' %s' % period.name
-            else:
-                prefix = '%s - %s' % (period.date_start, period.date_end)
+        prefix = '{} - {}'.format(wiz.date_from, wiz.date_to)
         if report == 'acquisition':
             if format == 'normal':
-                suffix = ' : ' + _('New Acquisitions')
+                title = prefix + ' : ' + _('New Acquisitions')
             else:
-                suffix = '-ACQ'
+                title = 'ACQ'
         elif report == 'active':
             if format == 'normal':
-                suffix = ' : ' + _('Active Assets')
+                title = prefix + ' : ' + _('Active Assets')
             else:
-                suffix = '-ACT'
+                title = 'ACT'
         else:
             if format == 'normal':
-                suffix = ' : ' + _('Removed Assets')
+                title = prefix + ' : ' + _('Removed Assets')
             else:
-                suffix = '-DSP'
-        return prefix + suffix
+                title = 'DSP'
+        return title
 
     def _report_title(self, ws, row_pos, ws_params, data, wiz):
         return self._write_ws_title(ws, row_pos, ws_params)
@@ -391,8 +384,14 @@ class AssetReportXlsx(AbstractReportXlsx):
         def _child_get(parent):
             assets = self.env['account.asset']
             children = parent.child_ids.filtered(
-                lambda r: r.type == 'view' or
-                (r.type == 'normal' and r.state != 'draft'))
+                lambda r, start_date=wiz.date_from, end_date=wiz.date_to:
+                r.type == 'view' or
+                (
+                    r.date_start <= end_date and
+                    (not r.date_remove or r.date_remove >= start_date) and
+                    (r.type == 'normal' and r.state != 'draft')
+                )
+            )
             children = children.sorted(
                 lambda r: (r.date_start or '', r.code))
             for child in children:
@@ -428,8 +427,8 @@ class AssetReportXlsx(AbstractReportXlsx):
         row_pos = self._report_title(ws, row_pos, ws_params, data, wiz)
 
         acquisitions = self.env['account.asset'].search(
-            [('date_start', '>=', wiz.date_range_id.date_start),
-             ('date_start', '<=', wiz.date_range_id.date_end),
+            [('date_start', '>=', wiz.date_from),
+             ('date_start', '<=', wiz.date_to),
              ('type', '=', 'normal'),
              ('id', 'in', self.assets.ids)],
             order='date_start ASC')
@@ -526,17 +525,11 @@ class AssetReportXlsx(AbstractReportXlsx):
         row_pos = 0
         row_pos = self._report_title(ws, row_pos, ws_params, data, wiz)
 
-        if not wiz.date_range_id.type_id.fiscal_year:
-            raise UserError(_(
-                "The current version of the asset mangement reporting "
-                "module supports only fiscal year based reports."
-            ))
-        fy = wiz.date_range_id
         actives = self.env['account.asset'].search(
-            [('date_start', '<=', fy.date_end),
+            [('date_start', '<=', wiz.date_to),
              '|',
              ('date_remove', '=', False),
-             ('date_remove', '>=', fy.date_start),
+             ('date_remove', '>=', wiz.date_from),
              ('type', '=', 'normal'),
              ('id', 'in', self.assets.ids)],
             order='date_start ASC')
@@ -583,7 +576,7 @@ class AssetReportXlsx(AbstractReportXlsx):
 
                 # fy_start_value
                 dls = asset.depreciation_line_ids.filtered(
-                    lambda r: r.line_date >= fy.date_start
+                    lambda r: r.line_date >= wiz.date_from
                     and r.type == 'depreciate')
                 dls = dls.sorted(key=lambda r: r.line_date)
                 if dls:
@@ -598,7 +591,7 @@ class AssetReportXlsx(AbstractReportXlsx):
                         error_name += ' (' + asset.code + ')' or ''
                     if asset.state in ['open']:
                         dls = asset.depreciation_line_ids.filtered(
-                            lambda r: r.line_date < fy.date_start
+                            lambda r: r.line_date < wiz.date_from
                             and r.type == 'depreciate'
                             and not r.init_entry
                             and not r.move_check)
@@ -623,7 +616,7 @@ class AssetReportXlsx(AbstractReportXlsx):
 
                 # fy_end_value
                 dls = asset.depreciation_line_ids.filtered(
-                    lambda r: r.line_date > fy.date_end
+                    lambda r: r.line_date > wiz.date_to
                     and r.type == 'depreciate')
                 dls = dls.sorted(key=lambda r: r.line_date)
                 if dls:
@@ -745,15 +738,9 @@ class AssetReportXlsx(AbstractReportXlsx):
         row_pos = 0
         row_pos = self._report_title(ws, row_pos, ws_params, data, wiz)
 
-        if not wiz.date_range_id.type_id.fiscal_year:
-            raise UserError(_(
-                "The current version of the asset mangement reporting "
-                "module supports only fiscal year based reports."
-            ))
-        fy = wiz.date_range_id
         removals = self.env['account.asset'].search(
-            [('date_remove', '>=', fy.date_start),
-             ('date_remove', '<=', fy.date_end),
+            [('date_remove', '>=', wiz.date_from),
+             ('date_remove', '<=', wiz.date_to),
              ('type', '=', 'normal'),
              ('id', 'in', self.assets.ids)],
             order='date_remove ASC')

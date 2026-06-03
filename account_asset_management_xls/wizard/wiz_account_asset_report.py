@@ -11,12 +11,14 @@ class WizAccountAssetReport(models.TransientModel):
     _name = 'wiz.account.asset.report'
     _description = 'Financial Assets report'
 
-    # TODO: add support for all date range types
-    date_range_id = fields.Many2one(
-        comodel_name='date.range',
-        string='Fiscal Year',
-        domain=[('type_id.fiscal_year', '=', True)],
-        required=True)
+    date_from = fields.Date(
+        string='Start Date',
+        required=True
+    )
+    date_to = fields.Date(
+        string='End Date',
+        required=True
+    )
     parent_asset_id = fields.Many2one(
         comodel_name='account.asset',
         string='Asset Filter', domain=[('type', '=', 'view')])
