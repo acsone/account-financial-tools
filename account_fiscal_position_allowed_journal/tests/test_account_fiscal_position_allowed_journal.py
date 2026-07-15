@@ -23,13 +23,6 @@ class TestAccountFiscalPositionAllowedJournal(AccountTestInvoicingCommon):
         cls.partner_model = cls.env["res.partner"]
 
         # INSTANCES
-        cls.account_account_01 = cls.env["account.account"].create(
-            {
-                "user_type_id": cls.env.ref("account.data_account_type_expenses").id,
-                "code": "EXPTEST",
-                "name": "Test expense account",
-            }
-        )
 
         cls.fiscal_position_01 = cls.fiscal_position_model.create(
             {"name": "Fiscal position 01"}
