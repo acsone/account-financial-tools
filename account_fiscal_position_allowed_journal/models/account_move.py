@@ -1,7 +1,7 @@
 # Copyright 2020 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, api, models
+from odoo import api, models
 from odoo.exceptions import UserError
 
 
@@ -40,10 +40,9 @@ class AccountMove(models.Model):
                 and rec.journal_id not in self.fiscal_position_id.allowed_journal_ids
             ):
                 raise UserError(
-                    _(
-                        "Journal {journal_name} is not allowed for fiscal position "
-                        "{fp_name}."
-                    ).format(
+                    self.env._(
+                        "Journal %(journal_name)s is not allowed for fiscal "
+                        "position %(fp_name)s.",
                         journal_name=rec.journal_id.display_name,
                         fp_name=rec.fiscal_position_id.display_name,
                     )

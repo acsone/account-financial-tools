@@ -3,8 +3,7 @@
 
 from odoo import fields
 from odoo.exceptions import UserError
-from odoo.tests import tagged
-from odoo.tests.common import Form
+from odoo.tests import Form, tagged
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
@@ -23,13 +22,6 @@ class TestAccountFiscalPositionAllowedJournal(AccountTestInvoicingCommon):
         cls.partner_model = cls.env["res.partner"]
 
         # INSTANCES
-        cls.account_account_01 = cls.env["account.account"].create(
-            {
-                "user_type_id": cls.env.ref("account.data_account_type_expenses").id,
-                "code": "EXPTEST",
-                "name": "Test expense account",
-            }
-        )
 
         cls.fiscal_position_01 = cls.fiscal_position_model.create(
             {"name": "Fiscal position 01"}
@@ -42,7 +34,8 @@ class TestAccountFiscalPositionAllowedJournal(AccountTestInvoicingCommon):
             }
         )
         cls.journal_02 = cls.journal_01.copy()
-        cls.partner_01 = cls.partner_model.search([], limit=1)
+        cls.partner_01 = cls.partner_model.create({"name": "Test partner 01"})
+        cls.product_01 = cls.env["product.product"].create({"name": "Test product 01"})
 
         move_form = Form(
             cls.env["account.move"].with_context(
@@ -55,7 +48,7 @@ class TestAccountFiscalPositionAllowedJournal(AccountTestInvoicingCommon):
         move_form.fiscal_position_id = cls.fiscal_position_01
         with move_form.invoice_line_ids.new() as line_form:
             line_form.name = "Invoice line 01"
-            line_form.product_id = cls.env.ref("product.product_product_4")
+            line_form.product_id = cls.product_01
             line_form.price_unit = 1
             line_form.quantity = 1
         cls.invoice_01 = move_form.save()
